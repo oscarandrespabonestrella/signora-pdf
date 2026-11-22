@@ -1,0 +1,156 @@
+<div class="page">
+  <h2>Digital signing</h2>
+  <p class="lead">
+    Visual signatures are just images. A <strong>digital signature</strong> is a cryptographic seal
+    produced by a certificate. This library never does that itself: it hands the PDF to a provider
+    (your backend or a trust service) and checks what comes back.
+  </p>
+
+  @if (!session.hasDocument()) {
+    <p class="notice" role="status">
+      No document is loaded. Open one in the <a routerLink="/">Viewer</a> first.
+    </p>
+  } @else {
+    <p class="summary">
+      <strong>{{ session.pageCount() }}</strong> page(s),
+      <strong>{{ session.placements().length }}</strong> visual signature(s) will be embedded before
+      signing.
+    </p>
+  }
+
+  <fieldset class="modes">
+    <legend>Provider</legend>
+    <label>
+      <input
+        type="radio"
+        name="mode"
+        value="simulated"
+        [checked]="mode() === 'simulated'"
+        (change)="setMode('simulated')"
+      />
+      <span><strong>Simulated</strong> — demo only, no cryptography</span>
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="mode"
+        value="http"
+        [checked]="mode() === 'http'"
+        (change)="setMode('http')"
+      />
+      <span><strong>Remote service (HTTP)</strong> — real signing, needs a backend</span>
+    </label>
+  </fieldset>
+
+  @if (mode() === 'simulated') {
+    <p class="banner simulated" role="note">
+      <strong>SIMULATED.</strong> This mode returns your PDF as it is (with any visual signatures,
+      but no seal) and reports that <em>no cryptographic signature was applied</em>. Use it to see
+      the workflow, not to sign.
+    </p>
+  } @else {
+    <p class="banner real" role="note">
+      Posts the PDF to <code>/api/sign</code> and lists certificates from
+      <code>/api/certificates</code>.
+      <strong>This playground does not include that backend</strong> (see
+      <code>docs/digital-signing.md</code> for the contract), so these calls fail here unless you
+      provide one.
+    </p>
+  }
+
+  <form class="form" (submit)="$event.preventDefault(); sign()">
+    <label>
+      Certificate
+      <select
+        [disabled]="certificates().length === 0"
+        [value]="certificateId()"
+        (change)="certificateId.set($any($event.target).value)"
+      >
+        @for (cert of certificates(); track cert.id) {
+          <option [value]="cert.id" [selected]="cert.id === certificateId()">
+            {{ cert.subject }}
+          </option>
+        }
+      </select>
+    </label>
+    @if (certificatesError(); as message) {
+      <p class="error" role="alert">{{ message }}</p>
+    }
+    @if (certificateId()) {
+      @for (cert of certificates(); track cert.id) {
+        @if (cert.id === certificateId() && cert.validTo) {
+          <p class="meta">
+            Issuer {{ cert.issuer }} · valid until {{ cert.validTo | date: 'mediumDate' }}
+          </p>
+        }
+      }
+    }
+
+    <label>
+      PAdES level
+      <select [value]="level()" (change)="level.set($any($event.target).value)">
+        @for (l of levels; track l) {
+          <option [value]="l" [selected]="l === level()">{{ l }}</option>
+        }
+      </select>
+    </label>
+    <label>
+      Reason
+      <input type="text" [value]="reason()" (input)="onText('reason', $event)" />
+    </label>
+    <label>
+      Location
+      <input type="text" [value]="location()" (input)="onText('location', $event)" />
+    </label>
+    <label>
+      Signer name
+      <input type="text" [value]="signerName()" (input)="onText('signerName', $event)" />
+    </label>
+
+    <button type="submit" class="primary" [disabled]="!canSign()">
+      {{
+        workflow.busy()
+          ? 'Signing…'
+          : mode() === 'simulated'
+            ? 'Run simulated signing'
+            : 'Sign with service'
+      }}
+    </button>
+  </form>
+
+  @if (error(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+
+  @if (result(); as r) {
+    <section class="result" [class.not-signed]="!r.cryptographic" aria-live="polite">
+      @if (r.cryptographic) {
+        <h3>Signed by the service</h3>
+        <p>
+          The service returned a PDF containing a signature. This library only checks that a
+          signature dictionary is present; <strong>validate the signature</strong> before relying on
+          it.
+        </p>
+      } @else {
+        <h3>NOT digitally signed</h3>
+        <p>
+          The simulated provider applied <strong>no cryptographic signature</strong>. The file is
+          your document with its visual signatures, nothing more.
+        </p>
+      }
+      <dl>
+        <dt>Provider</dt>
+        <dd>{{ r.providerId }}</dd>
+        <dt>Cryptographic</dt>
+        <dd>{{ r.cryptographic ? 'yes' : 'no' }}</dd>
+        <dt>At</dt>
+        <dd>{{ r.signedAt | date: 'medium' }}</dd>
+        <dt>Size</dt>
+        <dd>{{ r.pdf.length }} bytes</dd>
+      </dl>
+      @if (downloadUrl(); as url) {
+        <a class="download" [href]="url" [download]="fileName()">Download {{ fileName() }}</a>
+      }
+    </section>
+  }
+</div>

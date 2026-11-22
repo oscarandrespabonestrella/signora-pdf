@@ -1,0 +1,50 @@
+{
+  "name": "signora-pdf-workspace",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve playground",
+    "build:lib": "ng build signora-pdf",
+    "build:playground": "ng build playground",
+    "build": "npm run build:lib && npm run build:playground",
+    "test": "ng test signora-pdf --watch=false && ng test playground --watch=false",
+    "lint": "ng lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "pack:lib": "npm run build:lib && npm pack ./dist/signora-pdf --pack-destination ./dist",
+    "samples": "node scripts/generate-samples.mjs",
+    "docs:api": "typedoc",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "private": true,
+  "packageManager": "npm@11.16.0",
+  "dependencies": {
+    "@angular/common": "^22.3.0",
+    "@angular/compiler": "^22.3.0",
+    "@angular/core": "^22.3.0",
+    "@angular/forms": "^22.3.0",
+    "@angular/platform-browser": "^22.3.0",
+    "@angular/router": "^22.3.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@angular/build": "^22.3.0",
+    "@angular/cli": "^22.3.0",
+    "@angular/compiler-cli": "^22.3.0",
+    "@eslint/js": "^10.0.1",
+    "angular-eslint": "22.8.0",
+    "eslint": "^10.14.0",
+    "jsdom": "^31.0.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^6.5.438",
+    "playwright-core": "^1.65.1",
+    "prettier": "^3.8.1",
+    "typedoc": "^0.28.20",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "8.72.2",
+    "vitest": "^5.0.0"
+  },
+  "description": "Workspace of signora-pdf, an Angular SDK for viewing and signing PDF documents.",
+  "license": "MIT"
+}

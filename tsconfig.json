@@ -1,0 +1,44 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "paths": {
+      "signora-pdf": ["./projects/signora-pdf/src/public-api.ts"],
+      "signora-pdf/pdfjs": ["./projects/signora-pdf/pdfjs/src/public-api.ts"],
+      "signora-pdf/pdf-lib": ["./projects/signora-pdf/pdf-lib/src/public-api.ts"],
+      "signora-pdf/ui": ["./projects/signora-pdf/ui/src/public-api.ts"],
+      "signora-pdf/http": ["./projects/signora-pdf/http/src/public-api.ts"]
+    },
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/playground/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/playground/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/signora-pdf/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/signora-pdf/tsconfig.spec.json"
+    }
+  ]
+}

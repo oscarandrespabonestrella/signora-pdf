@@ -1,0 +1,57 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--pg-surface);
+  border-bottom: 1px solid var(--pg-border);
+}
+
+h1 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+h1 span {
+  color: var(--pg-muted);
+  font-weight: 400;
+}
+
+nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+nav a {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  color: var(--pg-text);
+  text-decoration: none;
+}
+
+nav a:hover {
+  background: var(--pg-hover);
+}
+
+nav a.active {
+  background: var(--pg-accent);
+  color: #fff;
+}
+
+nav a:focus-visible {
+  outline: 2px solid var(--pg-accent);
+  outline-offset: 2px;
+}
+
+.app-main {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}

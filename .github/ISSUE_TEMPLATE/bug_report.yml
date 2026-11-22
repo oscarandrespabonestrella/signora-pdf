@@ -1,0 +1,33 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: A minimal reproduction (StackBlitz, repo or steps). Attach a sample PDF if it is relevant and not confidential.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 'signora-pdf version'
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Angular, pdfjs-dist / pdf-lib versions, browser and OS
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: 'Security issues: please do **not** report them here. See SECURITY.md.'

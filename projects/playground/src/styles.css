@@ -1,0 +1,30 @@
+/* Playground chrome. These are the playground's own variables, not the library's. */
+:root {
+  --pg-bg: #f5f6fa;
+  --pg-surface: #ffffff;
+  --pg-text: #1f2430;
+  --pg-muted: #5b6475;
+  --pg-border: #d5d9e2;
+  --pg-hover: #eef1f7;
+  --pg-accent: #3b5bdb;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--pg-bg);
+  color: var(--pg-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+button {
+  font: inherit;
+}

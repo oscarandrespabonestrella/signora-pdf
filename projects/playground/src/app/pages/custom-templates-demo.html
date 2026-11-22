@@ -1,0 +1,28 @@
+<p class="intro">
+  The viewer below uses its own <code>SigningSession</code> and replaces the toolbar with a template
+  written in this application.
+</p>
+
+<signora-viewer class="viewer" [source]="source">
+  <ng-template signoraSlot="toolbar" let-session>
+    <div class="custom-toolbar">
+      <button type="button" (click)="session.previousPage()" [disabled]="!session.canGoPrevious()">
+        ← Previous
+      </button>
+      <span aria-live="polite">
+        Page <strong>{{ session.currentPage() }}</strong> of {{ session.pageCount() }}
+      </span>
+      <button type="button" (click)="session.nextPage()" [disabled]="!session.canGoNext()">
+        Next →
+      </button>
+      <span class="spacer"></span>
+      <button type="button" (click)="session.zoomOut()">Zoom −</button>
+      <button type="button" (click)="session.zoomIn()">Zoom +</button>
+      <button type="button" (click)="session.rotateClockwise()">Rotate ↻</button>
+    </div>
+  </ng-template>
+
+  <ng-template signoraSlot="empty">
+    <p class="empty">Pick a document to start.</p>
+  </ng-template>
+</signora-viewer>

@@ -1,0 +1,36 @@
+name: Release
+
+# Manual release of signora-pdf to npm. Run from a tag (vX.Y.Z) on main.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # npm provenance
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build:lib
+
+      - name: Publish
+        working-directory: dist/signora-pdf
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          TAG=latest
+          if [[ "$VERSION" == *-* ]]; then TAG=next; fi
+          npm publish --access public --provenance --tag "$TAG"

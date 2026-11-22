@@ -1,0 +1,109 @@
+<section class="controls" aria-label="Document and theme">
+  <div
+    class="dropzone"
+    [class.dragging]="dragging()"
+    (dragover)="onDragOver($event)"
+    (dragleave)="dragging.set(false)"
+    (drop)="onDrop($event)"
+  >
+    <label class="upload">
+      <input type="file" accept="application/pdf,.pdf" (change)="onFileSelected($event)" />
+      <span>Upload a PDF</span>
+    </label>
+    <span class="hint">or drop it here</span>
+  </div>
+
+  <div class="samples" role="group" aria-label="Sample documents">
+    @for (sample of samples; track sample.url) {
+      <button type="button" (click)="openSample(sample)">{{ sample.label }}</button>
+    }
+  </div>
+
+  <app-theme-panel (tokensChange)="theme.set($event)" />
+
+  <p class="current" aria-live="polite">
+    Showing: <strong>{{ fileName() }}</strong>
+  </p>
+  @if (uploadError(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+</section>
+
+<section class="export" aria-label="Export">
+  <div class="samples" role="group" aria-label="Export actions">
+    <button type="button" [disabled]="!canExport()" (click)="preview()">Preview result</button>
+    <button type="button" class="primary" [disabled]="!canExport()" (click)="download()">
+      Download PDF
+    </button>
+  </div>
+  <p class="hint">
+    {{ session.placements().length }} signature(s) placed. These are
+    <strong>visual signatures only</strong>: an image on the page, not a cryptographic digital
+    signature.
+  </p>
+  @if (exportError(); as message) {
+    <p class="error" role="alert">{{ message }}</p>
+  }
+</section>
+
+<section class="export" aria-label="Viewer options">
+  <div class="samples" role="group" aria-label="Page layout">
+    <button
+      type="button"
+      [attr.aria-pressed]="viewMode() === 'paged'"
+      (click)="viewMode.set('paged')"
+    >
+      One page at a time
+    </button>
+    <button
+      type="button"
+      [attr.aria-pressed]="viewMode() === 'continuous'"
+      (click)="viewMode.set('continuous')"
+    >
+      All pages
+    </button>
+  </div>
+  <fieldset class="modes">
+    <legend>Signature modes</legend>
+    @for (mode of modeOptions; track mode) {
+      <label>
+        <input
+          type="checkbox"
+          [checked]="modes().includes(mode)"
+          (change)="toggleMode(mode, $any($event.target).checked)"
+        />
+        {{ mode }}
+      </label>
+    }
+  </fieldset>
+  <label class="modes">
+    <input
+      type="checkbox"
+      [checked]="readOnly()"
+      (change)="readOnly.set($any($event.target).checked)"
+    />
+    Read-only
+  </label>
+  <div class="samples" role="group" aria-label="Coordinates">
+    <button type="button" (click)="showCoordinates()">Show coordinates (no PDF)</button>
+  </div>
+  @if (coordinates() !== null) {
+    <pre class="coords" aria-label="Signature coordinates as JSON">{{ coordinatesJson() }}</pre>
+  }
+</section>
+
+@if (previewBytes(); as bytes) {
+  <app-export-preview [bytes]="bytes" (closed)="previewBytes.set(null)" />
+}
+
+<signora-viewer
+  class="viewer"
+  [signoraTheme]="theme()"
+  [source]="source()"
+  [showSignaturePanel]="true"
+  [viewMode]="viewMode()"
+  [readOnly]="readOnly()"
+  (coordinatesChange)="coordinates.set($event)"
+  [signatureModes]="modes()"
+  [preloadedSignatures]="preloaded"
+/>

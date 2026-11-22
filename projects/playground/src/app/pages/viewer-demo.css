@@ -1,0 +1,136 @@
+:host {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.5rem 1.5rem;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+}
+
+.dropzone {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.4rem 0.75rem;
+  border: 2px dashed var(--pg-border);
+  border-radius: 8px;
+}
+
+.dropzone.dragging {
+  border-color: var(--pg-accent);
+  background: var(--pg-hover);
+}
+
+.upload {
+  position: relative;
+  padding: 0.4rem 0.9rem;
+  border-radius: 6px;
+  background: var(--pg-accent);
+  color: #fff;
+  cursor: pointer;
+}
+
+.upload:has(input:focus-visible) {
+  outline: 2px solid var(--pg-accent);
+  outline-offset: 2px;
+}
+
+.upload input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.hint,
+.current {
+  margin: 0;
+  color: var(--pg-muted);
+}
+
+.samples {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.samples button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid var(--pg-border);
+  border-radius: 6px;
+  background: var(--pg-surface);
+  color: var(--pg-text);
+  cursor: pointer;
+}
+
+.samples button:hover {
+  background: var(--pg-hover);
+}
+
+.theme {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.error {
+  margin: 0;
+  color: #c92a2a;
+}
+
+.viewer {
+  flex: 1;
+  min-height: 0;
+}
+
+.export {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.25rem;
+}
+
+.samples button.primary {
+  border-color: var(--pg-accent);
+  background: var(--pg-accent);
+  color: #fff;
+}
+
+.samples button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.modes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--signora-color-border, #d5d9e2);
+  border-radius: 8px;
+}
+
+.modes label {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.samples button[aria-pressed='true'] {
+  font-weight: 600;
+  outline: 2px solid var(--signora-color-focus-ring, #3b5bdb);
+}
+
+.coords {
+  max-height: 200px;
+  margin: 0;
+  overflow: auto;
+  font-size: 12px;
+}

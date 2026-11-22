@@ -1,0 +1,71 @@
+<details class="panel">
+  <summary>Theme</summary>
+
+  <div class="body">
+    <label class="row">
+      <span>Preset</span>
+      <select [value]="presetId()" (change)="selectPreset($event)">
+        @for (preset of presets; track preset.id) {
+          <option [value]="preset.id" [selected]="preset.id === presetId()">
+            {{ preset.label }}
+          </option>
+        }
+      </select>
+    </label>
+
+    @for (control of controls; track control.key) {
+      <div class="row">
+        <label [for]="'token-' + control.key">{{ control.label }}</label>
+        @switch (control.kind) {
+          @case ('color') {
+            <input
+              type="color"
+              [id]="'token-' + control.key"
+              [attr.data-token]="control.key"
+              [value]="colorValue(control)"
+              (input)="set(control, $event)"
+            />
+          }
+          @case ('length') {
+            <span class="range">
+              <input
+                type="range"
+                min="0"
+                max="24"
+                step="1"
+                [id]="'token-' + control.key"
+                [attr.data-token]="control.key"
+                [value]="pixels(control)"
+                (input)="set(control, $event)"
+              />
+              <output>{{ pixels(control) }}px</output>
+            </span>
+          }
+          @case ('font') {
+            <select
+              [id]="'token-' + control.key"
+              [attr.data-token]="control.key"
+              (change)="set(control, $event)"
+            >
+              @for (font of fonts; track font.value) {
+                <option [value]="font.value" [selected]="value(control) === font.value">
+                  {{ font.label }}
+                </option>
+              }
+            </select>
+          }
+        }
+      </div>
+    }
+
+    <div class="actions">
+      <button type="button" (click)="reset()">Reset</button>
+      <button type="button" (click)="copy()">{{ copied() ? 'Copied' : 'Copy CSS' }}</button>
+    </div>
+
+    <label class="css">
+      <span class="visually-hidden">Generated CSS</span>
+      <textarea readonly rows="6" [value]="css()"></textarea>
+    </label>
+  </div>
+</details>
