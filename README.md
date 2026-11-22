@@ -141,6 +141,10 @@ in normalized page coordinates, independent of zoom and rotation; see
 
 ## Documentation
 
+- **For AI agents and LLMs:** [`llms.txt`](llms.txt) and [`llms-full.txt`](llms-full.txt), a single
+  compact guide with every input, method and recipe. It also ships in the package as
+  `node_modules/signora-pdf/AGENTS.md`, so a coding agent can read it instead of exploring the
+  source. Regenerate with `npm run docs:ai`; CI checks it stays complete.
 - [Architecture](docs/architecture.md) · [Coordinates](docs/coordinates.md) · [Theming](docs/theming.md) · [Viewer options](docs/viewer-options.md)
   · [Digital signing](docs/digital-signing.md) · [Roadmap](docs/roadmap.md)
 - **API reference**, generated from the source with TypeDoc: `npm run docs:api`, then open

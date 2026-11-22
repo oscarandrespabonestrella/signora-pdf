@@ -5,6 +5,9 @@ Modular, extensible and themeable Angular SDK for viewing and signing PDF docume
 > **Alpha.** The viewer, coordinate model and extension points are available; signature creation,
 > placement, export and digital signing are on the roadmap.
 
+> **Using an AI coding agent?** Point it at `node_modules/signora-pdf/AGENTS.md`: one compact file
+> with the whole API and recipes, so it does not need to explore the package.
+
 ```bash
 npm install signora-pdf pdfjs-dist
 ```

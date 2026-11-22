@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve playground",
     "build:lib": "ng build signora-pdf",
+    "postbuild:lib": "node scripts/build-ai-docs.mjs --copy",
     "build:playground": "ng build playground",
     "build": "npm run build:lib && npm run build:playground",
     "test": "ng test signora-pdf --watch=false && ng test playground --watch=false",
@@ -14,6 +15,8 @@
     "pack:lib": "npm run build:lib && npm pack ./dist/signora-pdf --pack-destination ./dist",
     "samples": "node scripts/generate-samples.mjs",
     "docs:api": "typedoc",
+    "docs:ai": "node scripts/build-ai-docs.mjs",
+    "docs:ai:check": "node scripts/build-ai-docs.mjs --check",
     "screenshots": "node scripts/screenshots.mjs"
   },
   "private": true,

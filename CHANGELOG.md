@@ -8,6 +8,8 @@ All notable changes to this project are documented here. The format is based on
 
 ### Added
 
+- Guide for AI agents (`AGENTS.md`, shipped in the package, plus `llms.txt` / `llms-full.txt`),
+  generated and checked by `npm run docs:ai` / `docs:ai:check`; `context7.json` for Context7.
 - Viewer `viewMode` (`paged` or `continuous`), `signatureModes` (draw, type, upload, other),
   `preloadedSignatures` (assets, typed names and images) and a `placementsChange` output.
 - `session.addAssets()` and `session.exportCoordinates()` (normalized and PDF-point boxes, for

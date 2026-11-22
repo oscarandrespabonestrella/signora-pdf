@@ -1,0 +1,20 @@
+{
+  "$schema": "https://context7.com/schema/context7.json",
+  "projectTitle": "signora-pdf",
+  "description": "Angular SDK to view PDFs, place visual signatures and add digital signatures through your backend.",
+  "folders": ["docs", "projects/signora-pdf"],
+  "excludeFolders": ["docs/api", "docs/images", "projects/playground", "node_modules", "dist"],
+  "excludeFiles": [
+    "CHANGELOG.md",
+    "CODE_OF_CONDUCT.md",
+    "CONTRIBUTING.md",
+    "SECURITY.md",
+    "LICENSE"
+  ],
+  "rules": [
+    "Placements are stored normalized (0..1, origin top-left of the visual page), independent of zoom and rotation.",
+    "exportPdf() needs withPdfLibWriter(); exportCoordinates() and (coordinatesChange) need no writer.",
+    "The library never performs cryptography: digital signatures are made by your backend through SigningWorkflow.",
+    "The PDF.js worker must be served by the app at the workerSrc URL."
+  ]
+}
