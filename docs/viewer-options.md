@@ -27,6 +27,18 @@ Choose which ways of providing a signature the panel offers: `draw`, `type`, `up
 them. With an empty list the panel shows only the signature library. On `<signora-signature-panel>`
 the same thing is `builtInTabs` plus `providerTabs` (`true`, `false` or a list of provider ids).
 
+## Collapsible signature panel: `signaturePanelBreakpoint`
+
+```html
+<signora-viewer [showSignaturePanel]="true" [signaturePanelBreakpoint]="760" />
+```
+
+The panel has a button on its edge that collapses and expands it. When the viewer is narrower than
+`signaturePanelBreakpoint` pixels (default `760`) the panel starts collapsed, so the page keeps the
+space; wider than that it starts open. Use `0` to never collapse automatically. Once the user
+clicks the button, their choice is kept while the viewer is resized. Translate the button with the
+`showSignaturePanel` and `hideSignaturePanel` labels.
+
 ## Preloading signatures: `preloadedSignatures`
 
 ```html

@@ -4,11 +4,13 @@ import {
   Component,
   computed,
   contentChildren,
+  DestroyRef,
   effect,
   ElementRef,
   inject,
   input,
   output,
+  signal,
   untracked,
   viewChild,
   viewChildren,
@@ -120,17 +122,30 @@ export type ViewMode = 'paged' | 'continuous';
           }
         </div>
 
-        @if (showSignaturePanel() && !readOnly() && fieldsMode() !== 'edit') {
-          <aside class="side">
-            @if (signaturesSlot(); as slot) {
-              <ng-container [ngTemplateOutlet]="slot" [ngTemplateOutletContext]="context" />
-            } @else {
-              <signora-signature-panel
-                [builtInTabs]="builtInModes()"
-                [providerTabs]="signatureModes().includes('other')"
-              />
-            }
-          </aside>
+        @if (panelAvailable()) {
+          <button
+            type="button"
+            class="rail"
+            [attr.aria-expanded]="panelOpen()"
+            aria-controls="signora-signature-panel"
+            [attr.aria-label]="panelOpen() ? labels.hideSignaturePanel : labels.showSignaturePanel"
+            [attr.title]="panelOpen() ? labels.hideSignaturePanel : labels.showSignaturePanel"
+            (click)="panelChoice.set(!panelOpen())"
+          >
+            <span aria-hidden="true">{{ panelOpen() ? '›' : '‹' }}</span>
+          </button>
+          @if (panelOpen()) {
+            <aside class="side" id="signora-signature-panel">
+              @if (signaturesSlot(); as slot) {
+                <ng-container [ngTemplateOutlet]="slot" [ngTemplateOutletContext]="context" />
+              } @else {
+                <signora-signature-panel
+                  [builtInTabs]="builtInModes()"
+                  [providerTabs]="signatureModes().includes('other')"
+                />
+              }
+            </aside>
+          }
         }
       </div>
 
@@ -170,6 +185,25 @@ export type ViewMode = 'paged' | 'continuous';
       overflow: auto;
       border-left: 1px solid var(--signora-color-border, #d5d9e2);
       background: var(--signora-color-panel-bg, var(--signora-color-toolbar-bg, #fff));
+    }
+    .rail {
+      flex: none;
+      width: 1.5rem;
+      padding: 0;
+      border: 0;
+      border-left: 1px solid var(--signora-color-border, #d5d9e2);
+      background: var(--signora-color-panel-bg, var(--signora-color-toolbar-bg, #fff));
+      color: var(--signora-color-text-muted, #5b6475);
+      font: inherit;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+    .rail:hover {
+      background: var(--signora-color-hover, #eef1f7);
+    }
+    .rail:focus-visible {
+      outline: 2px solid var(--signora-color-focus-ring, #3b5bdb);
+      outline-offset: -2px;
     }
     .stage {
       flex: 1;
@@ -215,6 +249,12 @@ export class SignoraViewerComponent {
    * mode they scroll to the page, and scrolling updates the current page.
    */
   readonly viewMode = input<ViewMode>('paged');
+  /**
+   * The signature panel starts collapsed when the viewer is narrower than this many pixels,
+   * and open otherwise. `0` turns the automatic collapsing off. A click on the panel's edge
+   * button always wins over it, and the choice is kept while the viewer is resized.
+   */
+  readonly signaturePanelBreakpoint = input(760);
   /**
    * Which ways of providing a signature the panel offers: `draw`, `type`, `upload` and
    * `other` (tabs of registered providers, such as organization signatures). Defaults to all.
@@ -268,6 +308,20 @@ export class SignoraViewerComponent {
   /** Page last reported by scrolling, so it is not scrolled to again. */
   private scrollPage: number | null = null;
 
+  protected readonly panelAvailable = computed(
+    () => this.showSignaturePanel() && !this.readOnly() && this.fieldsMode() !== 'edit',
+  );
+  /** What the user chose with the edge button; `null` means "follow the viewer width". */
+  protected readonly panelChoice = signal<boolean | null>(null);
+  private readonly hostWidth = signal<number | null>(null);
+  protected readonly panelOpen = computed(() => {
+    const choice = this.panelChoice();
+    if (choice !== null) return choice;
+    const width = this.hostWidth();
+    const breakpoint = this.signaturePanelBreakpoint();
+    return width === null || breakpoint === 0 || width >= breakpoint;
+  });
+
   protected readonly builtInModes = computed(() =>
     this.signatureModes().filter((mode): mode is 'draw' | 'type' | 'upload' => mode !== 'other'),
   );
@@ -293,6 +347,15 @@ export class SignoraViewerComponent {
   );
 
   constructor() {
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver((entries) => {
+        const width = entries[0]?.contentRect.width;
+        if (width) this.hostWidth.set(width);
+      });
+      observer.observe(this.host.nativeElement);
+      inject(DestroyRef).onDestroy(() => observer.disconnect());
+    }
+
     effect(() => {
       const source = this.source();
       if (source) untracked(() => void this.session.load(source));

@@ -48,24 +48,25 @@ The viewer fills its host: **give the host a height**. `source` accepts a URL st
 
 ## `<signora-viewer>` inputs and outputs
 
-| Name                               | Type / default                                     | Effect                                                                                                                  |
-| ---------------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `source`                           | `PdfSource \| null` = `null`                       | Document to show; changing it loads another.                                                                            |
-| `showToolbar`                      | `boolean` = `true`                                 | Page navigation, zoom, rotation.                                                                                        |
-| `showSignaturePanel`               | `boolean` = `false`                                | Panel to create/choose signatures.                                                                                      |
-| `viewMode`                         | `'paged' \| 'continuous'` = `'paged'`              | One page at a time, or every page in one scroll.                                                                        |
-| `signatureModes`                   | `('draw'\|'type'\|'upload'\|'other')[]` = all four | Which tabs the panel offers. `other` = provider tabs (e.g. organization signatures). `[]` = library only.               |
-| `preloadedSignatures`              | `PreloadedSignature[]` = `[]`                      | Signatures ready from the start: `SignatureAsset`, `{ text, font?, label? }`, `{ image, label? }`.                      |
-| `readOnly`                         | `boolean` = `false`                                | Show placed signatures; nobody can place/move/resize/delete; panel hidden.                                              |
-| `coordinatesIncludeImages`         | `boolean` = `false`                                | Include `dataUrl` in `coordinatesChange`.                                                                               |
-| `signatureFields`                  | `SignatureField[]` = `[]`                          | Reserved, named areas to sign. Applied to every loaded document; see Signature fields.                                  |
-| `fieldsMode`                       | `'fill' \| 'edit'` = `'fill'`                      | `fill`: users fill the fields. `edit`: users create, move, resize, name and delete fields; signatures cannot be placed. |
-| `freePlacement`                    | `boolean` = `true`                                 | `false`: signatures can only go inside a field.                                                                         |
-| `(fieldsChange)`                   | `SignatureField[]`                                 | The fields after every change, including edits made in `edit` mode.                                                     |
-| `(coordinatesChange)`              | `SignatureCoordinates[]`                           | Where every signature is, after each change (`[]` when none).                                                           |
-| `(placementsChange)`               | `PlacedSignature[]`                                | Raw placements, with the full asset and image.                                                                          |
-| `[signoraTheme]` (directive)       | `SignoraThemeTokens`                               | Theme tokens, e.g. `{ 'color-accent': '#e11d48', radius: '12px' }`.                                                     |
-| `<ng-template signoraSlot="name">` | slots: `toolbar empty loading error signatures`    | Replace a section; the template receives the `SigningSession` as `$implicit` and `session`.                             |
+| Name                               | Type / default                                     | Effect                                                                                                                   |
+| ---------------------------------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `source`                           | `PdfSource \| null` = `null`                       | Document to show; changing it loads another.                                                                             |
+| `showToolbar`                      | `boolean` = `true`                                 | Page navigation, zoom, rotation.                                                                                         |
+| `showSignaturePanel`               | `boolean` = `false`                                | Panel to create/choose signatures.                                                                                       |
+| `signaturePanelBreakpoint`         | `number` = `760`                                   | Panel starts collapsed when the viewer is narrower than this (px); `0` = never auto-collapse. An edge button toggles it. |
+| `viewMode`                         | `'paged' \| 'continuous'` = `'paged'`              | One page at a time, or every page in one scroll.                                                                         |
+| `signatureModes`                   | `('draw'\|'type'\|'upload'\|'other')[]` = all four | Which tabs the panel offers. `other` = provider tabs (e.g. organization signatures). `[]` = library only.                |
+| `preloadedSignatures`              | `PreloadedSignature[]` = `[]`                      | Signatures ready from the start: `SignatureAsset`, `{ text, font?, label? }`, `{ image, label? }`.                       |
+| `readOnly`                         | `boolean` = `false`                                | Show placed signatures; nobody can place/move/resize/delete; panel hidden.                                               |
+| `coordinatesIncludeImages`         | `boolean` = `false`                                | Include `dataUrl` in `coordinatesChange`.                                                                                |
+| `signatureFields`                  | `SignatureField[]` = `[]`                          | Reserved, named areas to sign. Applied to every loaded document; see Signature fields.                                   |
+| `fieldsMode`                       | `'fill' \| 'edit'` = `'fill'`                      | `fill`: users fill the fields. `edit`: users create, move, resize, name and delete fields; signatures cannot be placed.  |
+| `freePlacement`                    | `boolean` = `true`                                 | `false`: signatures can only go inside a field.                                                                          |
+| `(fieldsChange)`                   | `SignatureField[]`                                 | The fields after every change, including edits made in `edit` mode.                                                      |
+| `(coordinatesChange)`              | `SignatureCoordinates[]`                           | Where every signature is, after each change (`[]` when none).                                                            |
+| `(placementsChange)`               | `PlacedSignature[]`                                | Raw placements, with the full asset and image.                                                                           |
+| `[signoraTheme]` (directive)       | `SignoraThemeTokens`                               | Theme tokens, e.g. `{ 'color-accent': '#e11d48', radius: '12px' }`.                                                      |
+| `<ng-template signoraSlot="name">` | slots: `toolbar empty loading error signatures`    | Replace a section; the template receives the `SigningSession` as `$implicit` and `session`.                              |
 
 Other components in `signora-pdf/ui`: `SignoraToolbarComponent`, `SignoraPageComponent`,
 `SignoraSignatureLayerComponent` (has `readOnly`, `fieldsMode`, `freePlacement`), `SignoraFieldEditorComponent`, `SignoraSignaturePanelComponent` (`builtInTabs`,

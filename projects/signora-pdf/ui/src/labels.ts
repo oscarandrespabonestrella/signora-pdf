@@ -21,6 +21,8 @@ export interface SignoraLabels {
 
   // Signature panel
   readonly signaturePanel: string;
+  readonly showSignaturePanel: string;
+  readonly hideSignaturePanel: string;
   readonly tabDraw: string;
   readonly tabType: string;
   readonly tabUpload: string;
@@ -80,6 +82,8 @@ export const DEFAULT_SIGNORA_LABELS: SignoraLabels = {
   pageAlt: (page) => `Page ${page}`,
 
   signaturePanel: 'Signatures',
+  showSignaturePanel: 'Show signatures panel',
+  hideSignaturePanel: 'Hide signatures panel',
   tabDraw: 'Draw',
   tabType: 'Type',
   tabUpload: 'Upload',

@@ -8,6 +8,9 @@ All notable changes to this project are documented here. The format is based on
 
 ### Added
 
+- Collapsible signature panel: an edge button folds the panel away, and it starts collapsed when
+  the viewer is narrower than `signaturePanelBreakpoint` (default 760 px). New labels
+  `showSignaturePanel` and `hideSignaturePanel`.
 - Signature fields: `signatureFields`, `fieldsMode` (`fill` or `edit`), `freePlacement` and
   `fieldsChange` on the viewer; `SigningSession` `fields`, `setFields`, `fillField`, `clearField`,
   `validate()`, `missingRequiredFields`; `exportPdf({ requireAllFields })`; `fieldId` in exported
