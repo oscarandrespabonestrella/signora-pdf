@@ -18,3 +18,4 @@ export * from './slots';
 export * from './theme.directive';
 export * from './toolbar.component';
 export * from './viewer.component';
+export * from './field-editor.component';

@@ -17,11 +17,13 @@ import {
   SigningSession,
   type PdfSource,
   type PlacedSignature,
+  type SignatureField,
   type SignatureCoordinates,
 } from 'signora-pdf';
+import { SignoraFieldEditorComponent } from './field-editor.component';
 import { SIGNORA_LABELS } from './labels';
 import { SignoraPageComponent } from './page.component';
-import { SignoraSignatureLayerComponent } from './signature-layer.component';
+import { SignoraSignatureLayerComponent, type FieldsMode } from './signature-layer.component';
 import {
   ALL_SIGNATURE_MODES,
   SignoraSignaturePanelComponent,
@@ -46,6 +48,7 @@ export type ViewMode = 'paged' | 'continuous';
   imports: [
     NgTemplateOutlet,
     SignoraPageComponent,
+    SignoraFieldEditorComponent,
     SignoraSignatureLayerComponent,
     SignoraSignaturePanelComponent,
     SignoraToolbarComponent,
@@ -59,6 +62,10 @@ export type ViewMode = 'paged' | 'continuous';
         } @else {
           <signora-toolbar />
         }
+      }
+
+      @if (fieldsMode() === 'edit' && !readOnly()) {
+        <signora-field-editor />
       }
 
       <div class="body">
@@ -79,6 +86,8 @@ export type ViewMode = 'paged' | 'continuous';
                       [pageIndex]="index"
                       [info]="page.info()"
                       [readOnly]="readOnly()"
+                      [fieldsMode]="fieldsMode()"
+                      [freePlacement]="freePlacement()"
                     />
                     @if (index === session.currentPage() - 1) {
                       <ng-container [ngTemplateOutlet]="overlay" />
@@ -111,7 +120,7 @@ export type ViewMode = 'paged' | 'continuous';
           }
         </div>
 
-        @if (showSignaturePanel() && !readOnly()) {
+        @if (showSignaturePanel() && !readOnly() && fieldsMode() !== 'edit') {
           <aside class="side">
             @if (signaturesSlot(); as slot) {
               <ng-container [ngTemplateOutlet]="slot" [ngTemplateOutletContext]="context" />
@@ -223,6 +232,22 @@ export class SignoraViewerComponent {
    * them, and the signature panel is hidden. Placements set through `SigningSession` still show.
    */
   readonly readOnly = input(false);
+  /**
+   * Signature fields: reserved, named areas that users fill with a signature. Replaces the
+   * fields whenever it changes or a document is loaded; signatures stay in fields whose id
+   * remains. Feed `(fieldsChange)` back into it, or ignore that output, as you prefer.
+   */
+  readonly signatureFields = input<readonly SignatureField[]>([]);
+  /**
+   * `fill` (default): users fill the fields. `edit`: users create, move, resize, name and delete
+   * the fields instead (for whoever lays out the document); signatures cannot be placed.
+   */
+  readonly fieldsMode = input<FieldsMode>('fill');
+  /** When `false`, signatures can only go inside a signature field. Defaults to `true`. */
+  readonly freePlacement = input(true);
+  /** Emits the signature fields every time they change, including edits made in `edit` mode. */
+  readonly fieldsChange = output<readonly SignatureField[]>();
+
   /** Whether `coordinatesChange` includes each signature image as a `data:` URL. */
   readonly coordinatesIncludeImages = input(false);
 
@@ -289,6 +314,17 @@ export class SignoraViewerComponent {
     });
 
     effect(() => this.placementsChange.emit(this.session.placements()));
+
+    effect(() => this.fieldsChange.emit(this.session.fields()));
+
+    // Fields come from the input: apply them to every new document, and whenever they change.
+    effect(() => {
+      const fields = this.signatureFields();
+      if (!this.session.document()) return;
+      untracked(() => {
+        if (fields !== this.session.fields()) this.session.setFields(fields);
+      });
+    });
 
     effect((onCleanup) => {
       const placements = this.session.placements();
@@ -372,7 +408,7 @@ export class SignoraViewerComponent {
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     if (
       target.closest(
-        'input, textarea, select, [contenteditable="true"], aside, [data-signora-placement]',
+        'input, textarea, select, [contenteditable="true"], aside, [data-signora-placement], [data-signora-field]',
       )
     ) {
       return;

@@ -8,6 +8,10 @@ All notable changes to this project are documented here. The format is based on
 
 ### Added
 
+- Signature fields: `signatureFields`, `fieldsMode` (`fill` or `edit`), `freePlacement` and
+  `fieldsChange` on the viewer; `SigningSession` `fields`, `setFields`, `fillField`, `clearField`,
+  `validate()`, `missingRequiredFields`; `exportPdf({ requireAllFields })`; `fieldId` in exported
+  coordinates; `SignoraFieldEditorComponent`; field tokens in the theme.
 - Guide for AI agents (`AGENTS.md`, shipped in the package, plus `llms.txt` / `llms-full.txt`),
   generated and checked by `npm run docs:ai` / `docs:ai:check`; `context7.json` for Context7.
 - Viewer `viewMode` (`paged` or `continuous`), `signatureModes` (draw, type, upload, other),

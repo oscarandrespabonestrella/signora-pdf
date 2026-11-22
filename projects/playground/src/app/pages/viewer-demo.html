@@ -84,6 +84,28 @@
     />
     Read-only
   </label>
+  <div class="samples" role="group" aria-label="Signature fields">
+    <button type="button" (click)="loadSampleFields()">Load sample fields</button>
+    <button
+      type="button"
+      [attr.aria-pressed]="fieldsMode() === 'edit'"
+      (click)="fieldsMode.set(fieldsMode() === 'edit' ? 'fill' : 'edit')"
+    >
+      Edit fields
+    </button>
+    <label class="modes">
+      <input
+        type="checkbox"
+        [checked]="!freePlacement()"
+        (change)="freePlacement.set(!$any($event.target).checked)"
+      />
+      Only inside fields
+    </label>
+    <button type="button" (click)="validateFields()">Validate required</button>
+    @if (fieldsStatus(); as status) {
+      <span class="hint" role="status">{{ status }}</span>
+    }
+  </div>
   <div class="samples" role="group" aria-label="Coordinates">
     <button type="button" (click)="showCoordinates()">Show coordinates (no PDF)</button>
   </div>
@@ -103,6 +125,10 @@
   [showSignaturePanel]="true"
   [viewMode]="viewMode()"
   [readOnly]="readOnly()"
+  [signatureFields]="fields()"
+  [fieldsMode]="fieldsMode()"
+  [freePlacement]="freePlacement()"
+  (fieldsChange)="fields.set($event)"
   (coordinatesChange)="coordinates.set($event)"
   [signatureModes]="modes()"
   [preloadedSignatures]="preloaded"

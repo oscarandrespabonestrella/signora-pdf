@@ -5,12 +5,15 @@ import {
   type CoordinatesExportOptions,
   type SignatureCoordinates,
 } from '../signatures/coordinates-export';
+import { MissingSignatureFieldsError, fitRectInField } from '../signatures/fields';
+import { createId } from '../signatures/placement';
 import type {
   PageInfo,
   PdfSource,
   PlacedSignature,
   Rotation,
   SignatureAsset,
+  SignatureField,
   ViewportOptions,
 } from '../models';
 import type { PdfDocumentHandle } from '../ports';
@@ -27,6 +30,12 @@ export const ZOOM_STEP = 1.25;
 
 /** Loading state of a {@link SigningSession}. */
 export type SessionStatus = 'idle' | 'loading' | 'ready' | 'error';
+
+/** Options of {@link SigningSession.exportPdf}. */
+export interface ExportPdfOptions {
+  /** Reject with {@link MissingSignatureFieldsError} while a required field is empty. */
+  readonly requireAllFields?: boolean;
+}
 
 /**
  * Headless state of one signing workflow: the loaded document, what is being
@@ -56,6 +65,9 @@ export class SigningSession {
   private readonly _assets = signal<readonly SignatureAsset[]>([]);
   private readonly _armedAsset = signal<SignatureAsset | null>(null);
   private readonly _selectedPlacementId = signal<string | null>(null);
+  private readonly _fields = signal<readonly SignatureField[]>([]);
+  private readonly _selectedFieldId = signal<string | null>(null);
+  private readonly _addingField = signal(false);
 
   readonly document = this._document.asReadonly();
   readonly status = this._status.asReadonly();
@@ -72,6 +84,23 @@ export class SigningSession {
   /** Asset waiting to be placed with the next click on a page. */
   readonly armedAsset = this._armedAsset.asReadonly();
   readonly selectedPlacementId = this._selectedPlacementId.asReadonly();
+  /** Signature fields of the document (reserved areas that get filled with a signature). */
+  readonly fields = this._fields.asReadonly();
+  /** Field chosen to receive the next signature that is created or picked. */
+  readonly selectedFieldId = this._selectedFieldId.asReadonly();
+  readonly selectedField = computed(
+    () => this._fields().find((f) => f.id === this._selectedFieldId()) ?? null,
+  );
+  /** `true` while the next click on a page creates a field (edit mode). */
+  readonly addingField = this._addingField.asReadonly();
+  /** Ids of the fields that already hold a signature. */
+  readonly filledFieldIds = computed(
+    () => new Set(this._placements().flatMap((p) => (p.fieldId ? [p.fieldId] : []))),
+  );
+  /** Required fields that are still empty. */
+  readonly missingRequiredFields = computed(() =>
+    this._fields().filter((f) => f.required && !this.filledFieldIds().has(f.id)),
+  );
   readonly selectedPlacement = computed(
     () => this._placements().find((p) => p.id === this._selectedPlacementId()) ?? null,
   );
@@ -197,6 +226,120 @@ export class SigningSession {
     this._selectedPlacementId.set(id);
   }
 
+  /* ------------------------------------------------------------ fields */
+
+  /**
+   * Replaces all fields (for example with the ones your backend defines). Signatures keep
+   * their field when its id is still present; those of removed fields are dropped.
+   */
+  setFields(fields: readonly SignatureField[]): void {
+    const ids = new Set(fields.map((f) => f.id));
+    this._fields.set(fields);
+    this._placements.update((list) =>
+      list.filter((p) => p.fieldId === undefined || ids.has(p.fieldId)),
+    );
+    this.dropStaleSelections();
+  }
+
+  addField(field: SignatureField): void {
+    this._fields.update((list) => (list.some((f) => f.id === field.id) ? list : [...list, field]));
+  }
+
+  /** Changes a field. A signature that fills it is fitted again inside the new area. */
+  updateField(id: string, patch: Partial<Omit<SignatureField, 'id'>>): void {
+    const current = this._fields().find((f) => f.id === id);
+    if (!current) return;
+    const next: SignatureField = { ...current, ...patch, id };
+    this._fields.update((list) => list.map((f) => (f.id === id ? next : f)));
+    const placed = this._placements().find((p) => p.fieldId === id);
+    if (placed && (patch.rect || patch.pageIndex !== undefined)) void this.refit(placed, next);
+  }
+
+  /** Removes a field and the signature that fills it. */
+  removeField(id: string): void {
+    this._fields.update((list) => list.filter((f) => f.id !== id));
+    this._placements.update((list) => list.filter((p) => p.fieldId !== id));
+    this.dropStaleSelections();
+  }
+
+  clearFields(): void {
+    this.setFields([]);
+  }
+
+  /** Chooses the field that receives the next signature created or picked (`null` to unset). */
+  selectField(id: string | null): void {
+    this._selectedFieldId.set(id);
+    if (id) {
+      this._armedAsset.set(null);
+      this._selectedPlacementId.set(null);
+    }
+  }
+
+  /** In edit mode, makes the next click on a page create a field. */
+  armFieldCreation(on: boolean): void {
+    this._addingField.set(on);
+    if (on) {
+      this._armedAsset.set(null);
+      this._selectedFieldId.set(null);
+    }
+  }
+
+  /**
+   * Fills a field with a signature: it is fitted (never cropped or stretched) and centred inside
+   * the field, and replaces any signature already there. Resolves to the placement.
+   */
+  async fillField(fieldId: string, asset: SignatureAsset): Promise<PlacedSignature | null> {
+    const document = this._document();
+    const field = this._fields().find((f) => f.id === fieldId);
+    if (!document || !field) return null;
+    const page = await document.getPageInfo(field.pageIndex);
+    // The field may have changed or gone while the page info was loading.
+    const current = this._fields().find((f) => f.id === fieldId);
+    if (!current || this._document() !== document) return null;
+    this.addAsset(asset);
+    const placement: PlacedSignature = {
+      id: createId('placement'),
+      asset,
+      pageIndex: current.pageIndex,
+      rect: fitRectInField(current.rect, asset, page),
+      fieldId,
+    };
+    this._placements.update((list) => [...list.filter((p) => p.fieldId !== fieldId), placement]);
+    this._armedAsset.set(null);
+    if (this._selectedFieldId() === fieldId) this._selectedFieldId.set(null);
+    return placement;
+  }
+
+  /** Empties a field, keeping the field. */
+  clearField(fieldId: string): void {
+    this._placements.update((list) => list.filter((p) => p.fieldId !== fieldId));
+  }
+
+  /** Whether every required field is filled, and which ones are not. */
+  validate(): { readonly valid: boolean; readonly missing: readonly SignatureField[] } {
+    const missing = this.missingRequiredFields();
+    return { valid: missing.length === 0, missing };
+  }
+
+  private async refit(placement: PlacedSignature, field: SignatureField): Promise<void> {
+    const document = this._document();
+    if (!document) return;
+    const page = await document.getPageInfo(field.pageIndex);
+    const rect = fitRectInField(field.rect, placement.asset, page);
+    this._placements.update((list) =>
+      list.map((p) => (p.id === placement.id ? { ...p, pageIndex: field.pageIndex, rect } : p)),
+    );
+  }
+
+  private dropStaleSelections(): void {
+    const selected = this._selectedFieldId();
+    if (selected && !this._fields().some((f) => f.id === selected)) this._selectedFieldId.set(null);
+    const placement = this._selectedPlacementId();
+    if (placement && !this._placements().some((p) => p.id === placement)) {
+      this._selectedPlacementId.set(null);
+    }
+  }
+
   /** Adds an asset to the library (ignored if an asset with the same id exists). */
   addAsset(asset: SignatureAsset): void {
     this._assets.update((list) => (list.some((a) => a.id === asset.id) ? list : [...list, asset]));
@@ -219,9 +362,16 @@ export class SigningSession {
 
   /** Arms an asset so the next click on a page places it. Pass `null` to cancel. */
   arm(asset: SignatureAsset | null): void {
+    const field = asset ? this._selectedFieldId() : null;
+    if (asset && field) {
+      // A field is waiting for a signature: use it instead of arming for free placement.
+      void this.fillField(field, asset);
+      return;
+    }
     if (asset) {
       this.addAsset(asset);
       this._selectedPlacementId.set(null);
+      this._addingField.set(false);
     }
     this._armedAsset.set(asset);
   }
@@ -231,9 +381,13 @@ export class SigningSession {
    * is not a digital signature). The loaded document is not modified.
    * Rejects if no writer was registered (`withPdfLibWriter()` / `withWriter()`).
    */
-  async exportPdf(): Promise<Uint8Array> {
+  async exportPdf(options: ExportPdfOptions = {}): Promise<Uint8Array> {
     const document = this._document();
     if (!document) throw new Error('SigningSession.exportPdf(): no document is loaded.');
+    if (options.requireAllFields) {
+      const missing = this.missingRequiredFields();
+      if (missing.length > 0) throw new MissingSignatureFieldsError(missing);
+    }
     if (!this.writer) {
       throw new Error(
         'SigningSession.exportPdf(): no PDF writer is registered. Add withPdfLibWriter() to provideSignora().',
@@ -266,5 +420,8 @@ export class SigningSession {
     this._placements.set([]);
     this._selectedPlacementId.set(null);
     this._armedAsset.set(null);
+    this._fields.set([]);
+    this._selectedFieldId.set(null);
+    this._addingField.set(false);
   }
 }

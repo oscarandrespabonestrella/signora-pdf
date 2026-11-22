@@ -1,9 +1,15 @@
 import { Component, computed, inject, signal } from '@angular/core';
-import { SigningSession, type PdfSource, type SignatureCoordinates } from 'signora-pdf';
+import {
+  SigningSession,
+  type PdfSource,
+  type SignatureCoordinates,
+  type SignatureField,
+} from 'signora-pdf';
 import {
   ALL_SIGNATURE_MODES,
   SignoraThemeDirective,
   SignoraViewerComponent,
+  type FieldsMode,
   type PreloadedSignature,
   type SignatureMode,
   type SignoraThemeTokens,
@@ -42,6 +48,38 @@ export class ViewerDemo {
     { text: 'Grace Hopper', font: 'Classic', label: 'Grace (typed)' },
   ];
   protected readonly readOnly = signal(false);
+  protected readonly fieldsMode = signal<FieldsMode>('fill');
+  protected readonly freePlacement = signal(true);
+  protected readonly fields = signal<readonly SignatureField[]>([]);
+  protected readonly fieldsStatus = signal('');
+
+  /** Two fields on the first page, as a backend could provide them. */
+  protected loadSampleFields(): void {
+    this.fields.set([
+      {
+        id: 'client',
+        pageIndex: 0,
+        rect: { x: 0.1, y: 0.72, width: 0.3, height: 0.07 },
+        label: 'Client signature',
+        required: true,
+      },
+      {
+        id: 'witness',
+        pageIndex: 0,
+        rect: { x: 0.55, y: 0.72, width: 0.3, height: 0.07 },
+        label: 'Witness',
+      },
+    ]);
+  }
+
+  protected validateFields(): void {
+    const { valid, missing } = this.session.validate();
+    this.fieldsStatus.set(
+      valid
+        ? 'All required fields are signed.'
+        : `Missing: ${missing.map((f) => f.label ?? f.id).join(', ')}`,
+    );
+  }
   protected readonly coordinates = signal<readonly SignatureCoordinates[] | null>(null);
   protected readonly coordinatesJson = computed(() => JSON.stringify(this.coordinates(), null, 2));
 

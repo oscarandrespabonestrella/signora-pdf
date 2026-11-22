@@ -49,6 +49,9 @@ live theme editors trivial:
 | `--signora-panel-width`           | `340px`                 | signature panel width                                                                                                        |
 | `--signora-signature-ink`         | `#1b1f3b`               | ink of drawn and typed signatures                                                                                            |
 | `--signora-selection-color`       | accent                  | selected placement outline                                                                                                   |
+| `--signora-field-color`           | accent                  | border of signature fields                                                                                                   |
+| `--signora-field-bg`              | translucent accent      | background of empty signature fields                                                                                         |
+| `--signora-field-text`            | accent                  | label of signature fields                                                                                                    |
 | `--signora-handle-size`           | `12px`                  | resize handles                                                                                                               |
 
 The signature UI is opt-in with `<signora-viewer [showSignaturePanel]="true" />`. The ink color is

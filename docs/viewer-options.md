@@ -68,6 +68,56 @@ Two outputs on the viewer report changes:
 - `(placementsChange)` emits the raw `PlacedSignature[]` (normalized box plus the full asset,
   image included).
 
+## Signature fields
+
+A field is a reserved, named area of a page that gets a signature. Unlike a free placement it says
+_where_ a signature is expected, can be required, and is reported to your backend.
+
+```ts
+const fields: SignatureField[] = [
+  {
+    id: 'client',
+    pageIndex: 0,
+    rect: { x: 0.1, y: 0.72, width: 0.3, height: 0.07 }, // normalized, origin top-left
+    label: 'Client signature',
+    required: true,
+  },
+];
+```
+
+```html
+<signora-viewer
+  [signatureFields]="fields"
+  [freePlacement]="false"
+  [showSignaturePanel]="true"
+  (fieldsChange)="fields = $event"
+/>
+```
+
+**Filling.** Empty fields are dashed boxes with their label (and `*` when required). A user clicks a
+field and then creates or picks a signature, or arms a signature and clicks the field, or drags one
+from the list onto it (`Enter` and `Space` work on a focused field). The signature is fitted and
+centred inside the field, never cropped or stretched. It stays there: it cannot be moved or
+resized, only cleared (`Delete`), which empties the field and keeps it. With `[freePlacement]="false"`
+signatures can only go in fields.
+
+**Validating.** `session.validate()` returns `{ valid, missing }`. `session.exportPdf({ requireAllFields: true })`
+rejects with `MissingSignatureFieldsError` while a required field is empty, and
+`session.missingRequiredFields()` is a signal for disabling a button. Coordinates exported with
+`exportCoordinates()` / `(coordinatesChange)` include the `fieldId` of each signature.
+
+**Editing.** `[fieldsMode]="'edit'"` is for whoever lays the document out: an editor bar appears (add a
+field, name it, mark it required, delete it), fields are moved and resized on the page (mouse,
+touch or arrow keys; `Delete` removes), and signatures cannot be placed. Read the result from
+`(fieldsChange)` or `session.fields()` and store it: it is what you pass as `signatureFields` to the
+people who sign.
+
+**Input and output.** `signatureFields` is applied whenever it changes and to every document that
+loads (fields belong to a document). Feeding `(fieldsChange)` back into it is safe. Without the UI:
+`setFields`, `addField`, `updateField`, `removeField`, `fillField(id, asset)`, `clearField(id)`.
+
+Theme tokens: `--signora-field-color`, `--signora-field-bg`, `--signora-field-text`.
+
 ## Read-only: `readOnly`
 
 ```html
