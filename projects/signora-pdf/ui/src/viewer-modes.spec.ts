@@ -194,3 +194,68 @@ describe('viewer view mode, signature modes and preloading', () => {
     });
   });
 });
+
+describe('collapsible signature panel', () => {
+  let fixture: ComponentFixture<Host>;
+  let resize: (width: number) => void;
+
+  beforeEach(async () => {
+    let callback: ResizeObserverCallback = () => undefined;
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(cb: ResizeObserverCallback) {
+          callback = cb;
+        }
+        observe = vi.fn();
+        disconnect = vi.fn();
+      },
+    );
+    resize = (width) =>
+      callback([{ contentRect: { width } } as ResizeObserverEntry], {} as ResizeObserver);
+    TestBed.configureTestingModule({ providers: [provideSignora(withRenderer(InstantRenderer))] });
+    fixture = TestBed.createComponent(Host);
+    await settle(fixture);
+  });
+
+  afterEach(() => vi.unstubAllGlobals());
+
+  const rail = () => all(fixture, '.rail')[0];
+  const panelShown = () => all(fixture, 'aside.side').length === 1;
+
+  it('is open on a wide viewer and collapsed on a narrow one', async () => {
+    resize(1200);
+    await settle(fixture);
+    expect(panelShown()).toBe(true);
+    expect(rail().getAttribute('aria-expanded')).toBe('true');
+
+    resize(500);
+    await settle(fixture);
+    expect(panelShown()).toBe(false);
+    expect(rail().getAttribute('aria-expanded')).toBe('false');
+  });
+
+  it('opens and closes with the edge button, and keeps that choice when resized', async () => {
+    resize(500);
+    await settle(fixture);
+    rail().click();
+    await settle(fixture);
+    expect(panelShown()).toBe(true);
+
+    resize(400);
+    await settle(fixture);
+    expect(panelShown()).toBe(true); // the user's choice wins over the width
+
+    rail().click();
+    await settle(fixture);
+    resize(1400);
+    await settle(fixture);
+    expect(panelShown()).toBe(false);
+  });
+
+  it('has no button when the panel is not available', async () => {
+    fixture.componentInstance.readOnly.set(true);
+    await settle(fixture);
+    expect(all(fixture, '.rail').length).toBe(0);
+  });
+});

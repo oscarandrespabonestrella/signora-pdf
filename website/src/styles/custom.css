@@ -1,0 +1,32 @@
+:root {
+  --sl-color-accent-low: #1e2a6b;
+  --sl-color-accent: #3b5bdb;
+  --sl-color-accent-high: #bfcbff;
+}
+:root[data-theme='light'] {
+  --sl-color-accent-low: #dbe3ff;
+  --sl-color-accent: #3b5bdb;
+  --sl-color-accent-high: #223a9c;
+}
+
+/* Wider content for the live examples: a slimmer left nav and a narrow, fixed "On this page". */
+:root {
+  --sl-sidebar-width: 16rem;
+  --sl-content-width: 76rem;
+  --toc-width: 13rem;
+}
+
+@media (min-width: 72rem) {
+  .right-sidebar-container {
+    width: var(--toc-width);
+  }
+  .right-sidebar-panel {
+    padding-inline: 0.75rem;
+  }
+  .right-sidebar-panel .sl-container {
+    width: calc(var(--toc-width) - 1.5rem);
+  }
+  [data-has-sidebar][data-has-toc] .main-pane {
+    width: calc(100% - var(--toc-width));
+  }
+}

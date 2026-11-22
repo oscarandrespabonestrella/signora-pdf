@@ -1,0 +1,26 @@
+---
+// One example = a live demo (playground route examples/<name>) + the real source file that runs it.
+// The code is read from projects/playground/src/app/examples/<name>.ts, so it cannot drift.
+import { Code } from '@astrojs/starlight/components';
+import Demo from './Demo.astro';
+
+interface Props {
+  name: string;
+  height?: number;
+  title: string;
+}
+
+const sources = import.meta.glob('../../../projects/playground/src/app/examples/*.ts', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+const { name, height = 520, title } = Astro.props;
+const key = Object.keys(sources).find((path) => path.endsWith(`/${name}.ts`));
+if (!key) throw new Error(`No example source for "${name}"`);
+const code = sources[key].trim();
+---
+
+<Demo route={`examples/${name}`} title={title} height={height} />
+<Code code={code} lang="ts" title={`${name}.ts`} />

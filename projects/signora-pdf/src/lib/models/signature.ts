@@ -25,4 +25,6 @@ export interface PlacedSignature {
   /** Zero-based page index. */
   readonly pageIndex: number;
   readonly rect: NormalizedRect;
+  /** Set when this signature fills a {@link SignatureField}. It then stays inside that field. */
+  readonly fieldId?: string;
 }

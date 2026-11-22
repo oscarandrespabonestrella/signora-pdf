@@ -1,0 +1,21 @@
+---
+title: 'Ejemplos: temas'
+description: Reestiliza el visor con variables CSS y sustituye su barra, con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+## Tema con variables CSS
+
+La directiva `signoraTheme` establece variables `--signora-*` desde un objeto. Los mismos tokens
+funcionan en CSS normal. El pad de dibujo se queda sobre «papel» blanco incluso en un tema oscuro
+para que la tinta se vea. Todos los tokens están en [temas](../../guides/theming/).
+
+<Example name="theme" title="Tema" />
+
+## Barra personalizada
+
+Sustituye cualquier sección con `<ng-template signoraSlot="...">`. La plantilla recibe la
+`SigningSession`, así que una barra son solo botones que llaman a sus métodos.
+
+<Example name="custom-toolbar" title="Barra personalizada" />

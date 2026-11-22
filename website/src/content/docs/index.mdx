@@ -1,0 +1,37 @@
+---
+title: Signora PDF
+description: A modular, extensible and themeable Angular SDK to view and sign PDF documents.
+template: splash
+hero:
+  tagline: View PDFs, place visual signatures and hand the result to your backend for a digital signature. Angular 22+, no lock-in.
+  actions:
+    - text: Get started
+      link: getting-started/installation/
+      icon: right-arrow
+    - text: Live demos
+      link: demos/
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+  <Card title="Viewer" icon="document">
+    PDF.js rendering, paged or continuous, zoom, rotation and keyboard navigation.
+  </Card>
+  <Card title="Signatures" icon="pencil">
+    Draw, type, upload or preload signatures. Place, move and resize them, or reserve named signature fields.
+  </Card>
+  <Card title="Export" icon="download">
+    Embed signatures with pdf-lib, or export only coordinates and let your backend draw them.
+  </Card>
+  <Card title="Digital signing" icon="approve-check">
+    A provider interface and HTTP adapter for PAdES services. The library never implements cryptography.
+  </Card>
+  <Card title="Themeable" icon="setting">
+    Every style is a `--signora-*` CSS variable. Replace any section with your own template.
+  </Card>
+  <Card title="Modular" icon="puzzle">
+    Core, PDF.js, pdf-lib, UI and HTTP are separate entry points. Swap any engine through ports.
+  </Card>
+</CardGrid>

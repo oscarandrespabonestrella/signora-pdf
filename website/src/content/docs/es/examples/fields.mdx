@@ -1,0 +1,23 @@
+---
+title: 'Ejemplos: campos de firma'
+description: Áreas de firma obligatorias, validación y un editor de campos, con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+Un **campo** es un área con nombre de una página que recibe una firma. Todos los detalles en
+[opciones del visor](../../guides/viewer-options/#campos-de-firma).
+
+## Rellenar y validar
+
+Las firmas solo pueden ir en los campos (`[freePlacement]="false"`). Pulsa **Validate** antes y
+después de firmar el campo obligatorio.
+
+<Example name="fields" title="Campos de firma" height={560} />
+
+## Maquetar los campos
+
+`fieldsMode="edit"` es para quien prepara el documento: añadir, nombrar, mover y redimensionar
+campos. Guarda el JSON de `(fieldsChange)` y pásalo como `signatureFields` a quienes firman.
+
+<Example name="fields-editor" title="Editor de campos" height={640} />

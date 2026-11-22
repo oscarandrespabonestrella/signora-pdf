@@ -1,0 +1,20 @@
+---
+title: 'Examples: signatures'
+description: Choose which signature modes to offer and preload signatures, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+## Limit the signature modes
+
+Offer only typing and uploading. `signatureModes` takes any of `draw`, `type`, `upload` and
+`other`. See [viewer options](../../guides/viewer-options/#signature-modes-signaturemodes).
+
+<Example name="signature-modes" title="Signature modes" />
+
+## Preload signatures
+
+Hand the library the signatures a person is allowed to use: text rendered with a font, images, or
+ready-made assets. Here the other modes are turned off so the library only holds the preloaded ones.
+
+<Example name="preloaded" title="Preloaded signatures" />

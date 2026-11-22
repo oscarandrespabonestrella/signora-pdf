@@ -20,6 +20,8 @@ export interface SignatureCoordinates {
   readonly label?: string;
   /** Zero-based page index. */
   readonly pageIndex: number;
+  /** Id of the signature field this signature fills, if any. */
+  readonly fieldId?: string;
   /** Visual size of the page in PDF points, with its intrinsic rotation applied. */
   readonly page: { readonly width: number; readonly height: number; readonly rotation: number };
   /**
@@ -49,6 +51,7 @@ export function placementToCoordinates(
     kind: asset.kind,
     ...(asset.label === undefined ? {} : { label: asset.label }),
     pageIndex: placement.pageIndex,
+    ...(placement.fieldId === undefined ? {} : { fieldId: placement.fieldId }),
     page: { width: page.width, height: page.height, rotation: page.rotation },
     normalized: placement.rect,
     pdf: toPdfUserSpace(placement.rect, page),

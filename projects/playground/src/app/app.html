@@ -1,13 +1,15 @@
-<header class="app-header">
-  <h1>Signora PDF <span>playground</span></h1>
-  <nav aria-label="Demos">
-    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
-      Viewer
-    </a>
-    <a routerLink="/custom-templates" routerLinkActive="active">Custom templates</a>
-    <a routerLink="/digital-signing" routerLinkActive="active">Digital signing</a>
-  </nav>
-</header>
+@if (!embedded) {
+  <header class="app-header">
+    <h1>Signora PDF <span>playground</span></h1>
+    <nav aria-label="Demos">
+      <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Viewer
+      </a>
+      <a routerLink="/custom-templates" routerLinkActive="active">Custom templates</a>
+      <a routerLink="/digital-signing" routerLinkActive="active">Digital signing</a>
+    </nav>
+  </header>
+}
 
 <main class="app-main">
   <router-outlet />

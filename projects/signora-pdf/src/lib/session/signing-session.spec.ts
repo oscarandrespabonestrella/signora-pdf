@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import type { PageInfo } from '../models';
 import type { PdfDocumentHandle, PdfRenderingPort } from '../ports';
 import { provideSignora, withRenderer, withWriter } from '../providers';
+import { MissingSignatureFieldsError } from '../signatures/fields';
 import { MAX_ZOOM, MIN_ZOOM, SigningSession } from './signing-session';
 
 class FakeHandle implements PdfDocumentHandle {
@@ -273,6 +274,140 @@ describe('SigningSession', () => {
 
     it('exportCoordinates rejects without a document', async () => {
       await expect(session.exportCoordinates()).rejects.toThrow(/no document/);
+    });
+  });
+  describe('signature fields', () => {
+    const asset = {
+      id: 'a',
+      kind: 'typed',
+      dataUrl: 'data:image/png;base64,AA==',
+      aspectRatio: 3,
+    };
+    const field = (id: string, extra = {}) => ({
+      id,
+      pageIndex: 0,
+      rect: { x: 0.1, y: 0.1, width: 0.3, height: 0.1 },
+      ...extra,
+    });
+
+    beforeEach(async () => {
+      await loadWith(2);
+    });
+
+    it('fills a field with a signature fitted inside it', async () => {
+      session.setFields([field('f1')]);
+      const placed = await session.fillField('f1', asset);
+      expect(placed?.fieldId).toBe('f1');
+      const r = placed!.rect;
+      expect(r.x).toBeGreaterThanOrEqual(0.1 - 1e-9);
+      expect(r.x + r.width).toBeLessThanOrEqual(0.4 + 1e-9);
+      expect(r.y + r.height).toBeLessThanOrEqual(0.2 + 1e-9);
+      expect(session.filledFieldIds().has('f1')).toBe(true);
+      expect(session.assets()).toHaveLength(1);
+    });
+
+    it('replaces the signature when a field is filled again', async () => {
+      session.setFields([field('f1')]);
+      await session.fillField('f1', asset);
+      await session.fillField('f1', { ...asset, id: 'b' });
+      expect(session.placements()).toHaveLength(1);
+      expect(session.placements()[0].asset.id).toBe('b');
+    });
+
+    it('tracks required fields and validates', async () => {
+      session.setFields([
+        field('f1', { required: true }),
+        field('f2'),
+        field('f3', { required: true }),
+      ]);
+      expect(session.validate().valid).toBe(false);
+      expect(session.missingRequiredFields().map((f) => f.id)).toEqual(['f1', 'f3']);
+      await session.fillField('f1', asset);
+      await session.fillField('f3', asset);
+      expect(session.validate()).toEqual({ valid: true, missing: [] });
+    });
+
+    it('exportPdf can require every required field', async () => {
+      const writer = { applyVisualSignatures: vi.fn().mockResolvedValue(new Uint8Array([1])) };
+      TestBed.resetTestingModule();
+      FakeRenderer.pending = [];
+      TestBed.configureTestingModule({
+        providers: [
+          provideSignora(
+            withRenderer(FakeRenderer),
+            withWriter(
+              class {
+                applyVisualSignatures = writer.applyVisualSignatures;
+              },
+            ),
+          ),
+        ],
+      });
+      session = TestBed.inject(SigningSession);
+      await loadWith(1);
+      session.setFields([field('f1', { required: true, label: 'Client' })]);
+      await expect(session.exportPdf({ requireAllFields: true })).rejects.toBeInstanceOf(
+        MissingSignatureFieldsError,
+      );
+      await expect(session.exportPdf({ requireAllFields: true })).rejects.toThrow(/Client/);
+      await session.fillField('f1', asset);
+      await expect(session.exportPdf({ requireAllFields: true })).resolves.toBeInstanceOf(
+        Uint8Array,
+      );
+      expect(writer.applyVisualSignatures).toHaveBeenCalledTimes(1);
+    });
+
+    it('setFields keeps signatures of fields that remain and drops the rest', async () => {
+      session.setFields([field('f1'), field('f2')]);
+      await session.fillField('f1', asset);
+      await session.fillField('f2', asset);
+      session.setFields([field('f1', { label: 'renamed' })]);
+      expect(session.placements().map((p) => p.fieldId)).toEqual(['f1']);
+    });
+
+    it('removing a field removes its signature; clearing keeps the field', async () => {
+      session.setFields([field('f1'), field('f2')]);
+      await session.fillField('f1', asset);
+      await session.fillField('f2', asset);
+      session.clearField('f1');
+      expect(session.fields()).toHaveLength(2);
+      expect(session.placements().map((p) => p.fieldId)).toEqual(['f2']);
+      session.removeField('f2');
+      expect(session.fields().map((f) => f.id)).toEqual(['f1']);
+      expect(session.placements()).toEqual([]);
+    });
+
+    it('moving a filled field fits its signature again', async () => {
+      session.setFields([field('f1')]);
+      await session.fillField('f1', asset);
+      session.updateField('f1', { rect: { x: 0.5, y: 0.5, width: 0.3, height: 0.1 } });
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(session.placements()[0].rect.x).toBeGreaterThanOrEqual(0.5 - 1e-9);
+    });
+
+    it('a signature picked while a field is selected fills that field', async () => {
+      session.setFields([field('f1')]);
+      session.selectField('f1');
+      session.arm(asset);
+      await Promise.resolve();
+      await Promise.resolve();
+      expect(session.placements()[0]?.fieldId).toBe('f1');
+      expect(session.armedAsset()).toBeNull();
+      expect(session.selectedFieldId()).toBeNull();
+    });
+
+    it('fields do not survive loading another document', async () => {
+      session.setFields([field('f1')]);
+      await loadWith(1);
+      expect(session.fields()).toEqual([]);
+    });
+
+    it('exportCoordinates reports the field of each signature', async () => {
+      session.setFields([field('f1')]);
+      await session.fillField('f1', asset);
+      const [c] = await session.exportCoordinates();
+      expect(c.fieldId).toBe('f1');
     });
   });
 });

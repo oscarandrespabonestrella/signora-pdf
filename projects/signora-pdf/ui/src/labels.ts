@@ -21,6 +21,8 @@ export interface SignoraLabels {
 
   // Signature panel
   readonly signaturePanel: string;
+  readonly showSignaturePanel: string;
+  readonly hideSignaturePanel: string;
   readonly tabDraw: string;
   readonly tabType: string;
   readonly tabUpload: string;
@@ -49,6 +51,15 @@ export interface SignoraLabels {
   readonly signatureName: string;
   readonly removePlacement: string;
   readonly resizeHandle: string;
+  readonly fieldsEditor: string;
+  readonly addField: string;
+  readonly addFieldHint: string;
+  readonly fieldLabelInput: string;
+  readonly fieldRequired: string;
+  readonly removeField: string;
+  readonly fieldHint: string;
+  readonly fieldName: string;
+  readonly fieldAria: (label: string, required: boolean, filled: boolean) => string;
 }
 
 /** English strings used unless `SIGNORA_LABELS` is overridden. Spread it to override only some strings. */
@@ -71,6 +82,8 @@ export const DEFAULT_SIGNORA_LABELS: SignoraLabels = {
   pageAlt: (page) => `Page ${page}`,
 
   signaturePanel: 'Signatures',
+  showSignaturePanel: 'Show signatures panel',
+  hideSignaturePanel: 'Hide signatures panel',
   tabDraw: 'Draw',
   tabType: 'Type',
   tabUpload: 'Upload',
@@ -98,6 +111,17 @@ export const DEFAULT_SIGNORA_LABELS: SignoraLabels = {
   signatureName: 'Signature',
   removePlacement: 'Remove signature',
   resizeHandle: 'Resize',
+
+  fieldsEditor: 'Signature fields',
+  addField: 'Add signature field',
+  addFieldHint: 'Click on the page to place the field.',
+  fieldLabelInput: 'Field label',
+  fieldRequired: 'Required',
+  removeField: 'Remove field',
+  fieldHint: 'Click to sign',
+  fieldName: 'Signature field',
+  fieldAria: (label, required, filled) =>
+    `${label}${required ? ', required' : ''}${filled ? ', signed' : ', empty. Press Enter to sign'}`,
 };
 
 /** Override to translate or reword the default UI. */

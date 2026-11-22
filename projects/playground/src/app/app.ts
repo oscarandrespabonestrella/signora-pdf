@@ -7,4 +7,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App {}
+export class App {
+  /** `?embed=1` hides the playground header, for iframes in the documentation. */
+  protected readonly embedded = new URLSearchParams(location.search).has('embed');
+}

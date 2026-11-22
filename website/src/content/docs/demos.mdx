@@ -1,0 +1,29 @@
+---
+title: Live demos
+description: Run the real SDK in your browser. These are the playground pages embedded in the docs.
+---
+
+import Demo from '../../components/Demo.astro';
+
+Everything below is the actual library running in your browser. Nothing is uploaded: PDFs stay
+on your device.
+
+## Viewer and signatures
+
+Draw, type or upload a signature, drag it onto the page, resize it, switch between paged and
+continuous view, change the theme live and export the result.
+
+<Demo title="Viewer and signatures" route="" height={820} />
+
+## Custom templates
+
+The same viewer with the toolbar and states replaced by application-defined templates.
+
+<Demo title="Custom templates" route="custom-templates" height={640} />
+
+## Digital signing
+
+The workflow from visual signature to digital signature. The simulated provider is clearly
+labelled as **not signed**; a real one is your backend.
+
+<Demo title="Digital signing" route="digital-signing" height={760} />
