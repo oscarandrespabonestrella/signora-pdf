@@ -1,0 +1,17 @@
+# signora-pdf
+
+> Angular SDK to view PDFs, place visual signatures and, through your backend, add digital signatures. Standalone components and signals; the core has no dependency on PDF.js or pdf-lib.
+
+Start with the complete guide: it fits in a single read and lists every input, output and method.
+
+- [Complete guide for LLMs and agents](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/llms-full.txt): setup, API reference, recipes, gotchas
+- [Viewer options](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/viewer-options.md): view mode, signature modes, preloading, read-only, coordinates
+- [Coordinates](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/coordinates.md): normalized model, PDF points, rotation
+- [Digital signing](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/digital-signing.md): workflow and the HTTP contract for your backend
+- [Theming](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/theming.md): design tokens, slots, labels
+- [Architecture](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/architecture.md): ports and adapters
+
+## Optional
+
+- [README](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/README.md)
+- [Changelog](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/CHANGELOG.md)
