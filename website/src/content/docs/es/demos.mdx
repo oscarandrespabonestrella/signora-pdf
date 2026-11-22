@@ -1,0 +1,29 @@
+---
+title: Demos en vivo
+description: Ejecuta el SDK real en tu navegador. Son las páginas del playground incrustadas en la documentación.
+---
+
+import Demo from '../../../components/Demo.astro';
+
+Todo lo que ves abajo es la librería real ejecutándose en tu navegador. No se sube nada: los PDFs
+no salen de tu equipo.
+
+## Visor y firmas
+
+Dibuja, escribe o sube una firma, arrástrala a la página, redimensiónala, alterna entre vista
+paginada y continua, cambia el tema en vivo y exporta el resultado.
+
+<Demo title="Visor y firmas" route="" height={820} />
+
+## Plantillas personalizadas
+
+El mismo visor con la barra y los estados sustituidos por plantillas de la aplicación.
+
+<Demo title="Plantillas personalizadas" route="custom-templates" height={640} />
+
+## Firma digital
+
+El flujo de la firma visual a la firma digital. El proveedor simulado se rotula claramente como
+**no firmado**; uno real es tu backend.
+
+<Demo title="Firma digital" route="digital-signing" height={760} />

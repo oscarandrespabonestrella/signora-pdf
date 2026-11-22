@@ -1,0 +1,23 @@
+---
+title: 'Examples: signature fields'
+description: Required signature areas, validation and a field editor, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+A **field** is a named area of a page that gets a signature. See
+[viewer options](../../guides/viewer-options/#signature-fields) for every detail.
+
+## Fill and validate
+
+Signatures can only go in the fields (`[freePlacement]="false"`). Press **Validate** before and after
+signing the required field.
+
+<Example name="fields" title="Signature fields" height={560} />
+
+## Lay out the fields
+
+`fieldsMode="edit"` is for whoever prepares the document: add, name, move and resize fields. Store
+the JSON from `(fieldsChange)` and pass it as `signatureFields` to the people who sign.
+
+<Example name="fields-editor" title="Field editor" height={640} />

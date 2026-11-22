@@ -1,0 +1,30 @@
+---
+title: 'Examples: viewer'
+description: A basic viewer, continuous scrolling and a read-only viewer, each with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+All examples assume the app is configured as in the [quick start](../../getting-started/quick-start/)
+(`provideSignora(withPdfJsRenderer(...), withPdfLibWriter())`). Each demo below is the real
+component, and the code under it is the file that runs it.
+
+## Basic viewer
+
+A PDF and the signature panel. Draw or type a signature, click it, then click the page.
+
+<Example name="basic" title="Basic viewer" />
+
+## Continuous scrolling
+
+`viewMode="continuous"` puts every page in one scrollable column. Pages far from the visible area
+are drawn lazily. See [viewer options](../../guides/viewer-options/#page-layout-viewmode).
+
+<Example name="continuous" title="Continuous scrolling" />
+
+## Read-only
+
+`[readOnly]="true"` shows existing signatures that nobody can edit. Load them from your backend
+into the session with `session.addPlacement()`.
+
+<Example name="read-only" title="Read-only viewer" />

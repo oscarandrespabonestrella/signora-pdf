@@ -1,0 +1,30 @@
+---
+title: 'Ejemplos: visor'
+description: Un visor básico, scroll continuo y un visor de solo lectura, cada uno con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+Todos los ejemplos suponen que la app está configurada como en el [inicio rápido](../../getting-started/quick-start/)
+(`provideSignora(withPdfJsRenderer(...), withPdfLibWriter())`). Cada demo es el componente real, y
+el código de debajo es el archivo que lo ejecuta. (Los comentarios del código están en inglés.)
+
+## Visor básico
+
+Un PDF y el panel de firmas. Dibuja o escribe una firma, haz clic en ella y luego en la página.
+
+<Example name="basic" title="Visor básico" />
+
+## Scroll continuo
+
+`viewMode="continuous"` pone todas las páginas en una columna con scroll. Las páginas lejos del
+área visible se dibujan de forma diferida. Ver [opciones del visor](../../guides/viewer-options/#disposición-de-páginas-viewmode).
+
+<Example name="continuous" title="Scroll continuo" />
+
+## Solo lectura
+
+`[readOnly]="true"` muestra firmas existentes que nadie puede editar. Cárgalas desde tu backend en
+la sesión con `session.addPlacement()`.
+
+<Example name="read-only" title="Visor de solo lectura" />

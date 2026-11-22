@@ -1,0 +1,22 @@
+---
+title: 'Examples: export'
+description: Export a PDF with the signatures embedded, or export only coordinates, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+## Export a signed PDF
+
+Needs `withPdfLibWriter()`. Place a signature, then download. The result is a new PDF with the
+signatures embedded. These are **visual** signatures; for a digital signature see
+[digital signing](../../guides/digital-signing/).
+
+<Example name="export-pdf" title="Export PDF" />
+
+## Export only coordinates
+
+When your backend draws the signatures, skip the writer and read where each one goes. `normalized`
+is a fraction of the visual page (origin top-left); `pdf` is in PDF points (origin bottom-left).
+See [coordinates](../../concepts/coordinates/).
+
+<Example name="coordinates" title="Export coordinates" height={640} />

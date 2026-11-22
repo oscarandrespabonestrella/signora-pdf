@@ -1,0 +1,21 @@
+---
+title: 'Examples: theming'
+description: Restyle the viewer with CSS variables and replace its toolbar, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+## Theme with CSS variables
+
+The `signoraTheme` directive sets `--signora-*` variables from an object. The same tokens work in
+plain CSS. The drawing pad stays on white "paper" even in a dark theme so ink is visible. All
+tokens are listed in [theming](../../guides/theming/).
+
+<Example name="theme" title="Theme" />
+
+## Custom toolbar
+
+Replace any section with `<ng-template signoraSlot="...">`. The template receives the
+`SigningSession`, so a toolbar is just buttons that call its methods.
+
+<Example name="custom-toolbar" title="Custom toolbar" />

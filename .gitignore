@@ -45,3 +45,13 @@ Thumbs.db
 
 # Generated API documentation (npm run docs:api)
 /docs/api
+
+# Website
+website/node_modules
+website/dist
+website/.astro
+website/src/content/docs/guides/
+website/src/content/docs/concepts/
+website/public/api
+website/public/demo
+website/public/demo-build

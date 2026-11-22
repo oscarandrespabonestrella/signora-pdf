@@ -17,7 +17,9 @@
     "docs:api": "typedoc",
     "docs:ai": "node scripts/build-ai-docs.mjs",
     "docs:ai:check": "node scripts/build-ai-docs.mjs --check",
-    "screenshots": "node scripts/screenshots.mjs"
+    "screenshots": "node scripts/screenshots.mjs",
+    "docs:site:prepare": "ng build playground --base-href /signora-pdf/demo/ --output-path website/public/demo-build && node scripts/place-demo.mjs && typedoc --out website/public/api",
+    "docs:site": "npm run docs:site:prepare && npm run build --prefix website"
   },
   "private": true,
   "packageManager": "npm@11.16.0",

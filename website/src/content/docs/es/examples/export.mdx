@@ -1,0 +1,22 @@
+---
+title: 'Ejemplos: exportación'
+description: Exporta un PDF con las firmas incrustadas, o solo coordenadas, con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+## Exportar un PDF firmado
+
+Requiere `withPdfLibWriter()`. Coloca una firma y descarga. El resultado es un PDF nuevo con las
+firmas incrustadas. Son firmas **visuales**; para una firma digital ver
+[firma digital](../../guides/digital-signing/).
+
+<Example name="export-pdf" title="Exportar PDF" />
+
+## Exportar solo coordenadas
+
+Cuando tu backend dibuja las firmas, omite el writer y lee dónde va cada una. `normalized` es una
+fracción de la página visual (origen arriba a la izquierda); `pdf` está en puntos PDF (origen abajo
+a la izquierda). Ver [coordenadas](../../concepts/coordinates/).
+
+<Example name="coordinates" title="Exportar coordenadas" height={640} />

@@ -1,0 +1,21 @@
+---
+title: 'Ejemplos: firmas'
+description: Elige qué modos de firma ofrecer y precarga firmas, con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+## Limitar los modos de firma
+
+Ofrece solo escribir y subir. `signatureModes` acepta `draw`, `type`, `upload` y `other`. Ver
+[opciones del visor](../../guides/viewer-options/#modos-de-firma-signaturemodes).
+
+<Example name="signature-modes" title="Modos de firma" />
+
+## Precargar firmas
+
+Entrega a la librería las firmas que una persona puede usar: texto renderizado con una fuente,
+imágenes o assets ya hechos. Aquí se desactivan los demás modos para que la librería solo tenga
+las precargadas.
+
+<Example name="preloaded" title="Firmas precargadas" />
