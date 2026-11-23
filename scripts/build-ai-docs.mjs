@@ -2,7 +2,14 @@
 // mentions every public viewer input/output, session member and provider function.
 //   node scripts/build-ai-docs.mjs          write the files
 //   node scripts/build-ai-docs.mjs --check  fail if the guide is incomplete or the files are stale
-import { existsSync, readFileSync, writeFileSync, readdirSync, statSync } from 'node:fs';
+import {
+  copyFileSync,
+  existsSync,
+  readFileSync,
+  writeFileSync,
+  readdirSync,
+  statSync,
+} from 'node:fs';
 import { join } from 'node:path';
 
 const root = new URL('..', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
@@ -65,7 +72,8 @@ if (process.argv.includes('--copy')) {
     process.exit(1);
   }
   writeFileSync(join(dist, 'AGENTS.md'), full);
-  console.log('Copied AGENTS.md into dist/signora-pdf');
+  copyFileSync(join(root, 'LICENSE'), join(dist, 'LICENSE')); // MIT requires shipping the license
+  console.log('Copied AGENTS.md and LICENSE into dist/signora-pdf');
   process.exit(0);
 }
 
