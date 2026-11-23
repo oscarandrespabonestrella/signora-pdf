@@ -63,7 +63,8 @@ export default defineConfig({
             {
               label: 'API reference (TypeDoc)',
               translations: { es: 'Referencia de la API (TypeDoc)' },
-              link: '/api/',
+              // Absolute: Starlight prefixes relative sidebar links with the locale (/es/api/ → 404).
+              link: 'https://oscarandrespabonestrella.github.io/signora-pdf/api/',
               attrs: { target: '_blank' },
             },
           ],

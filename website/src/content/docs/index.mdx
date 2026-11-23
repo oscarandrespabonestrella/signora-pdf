@@ -3,6 +3,9 @@ title: Signora PDF
 description: A modular, extensible and themeable Angular SDK to view and sign PDF documents.
 template: splash
 hero:
+  image:
+    file: ../../../../docs/images/viewer-signing.png
+    alt: The Signora PDF viewer with a drawn signature and a stamp placed on a contract
   tagline: View PDFs, place visual signatures and hand the result to your backend for a digital signature. Angular 22+, no lock-in.
   actions:
     - text: Get started
@@ -15,7 +18,7 @@ hero:
 
 import { Card, CardGrid } from '@astrojs/starlight/components';
 
-<CardGrid stagger>
+<CardGrid>
   <Card title="Viewer" icon="document">
     PDF.js rendering, paged or continuous, zoom, rotation and keyboard navigation.
   </Card>
@@ -35,3 +38,13 @@ import { Card, CardGrid } from '@astrojs/starlight/components';
     Core, PDF.js, pdf-lib, UI and HTTP are separate entry points. Swap any engine through ports.
   </Card>
 </CardGrid>
+
+## Install
+
+```bash
+npm install signora-pdf pdfjs-dist
+```
+
+Published on npm as [`signora-pdf`](https://www.npmjs.com/package/signora-pdf). Then follow the [installation guide](getting-started/installation/) and the [quick start](getting-started/quick-start/).
+
+[API reference](/signora-pdf/api/) · [GitHub](https://github.com/oscarandrespabonestrella/signora-pdf) · [Changelog](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/CHANGELOG.md)

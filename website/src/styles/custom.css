@@ -9,6 +9,13 @@
   --sl-color-accent-high: #223a9c;
 }
 
+/* Home hero: frame the product screenshot so it reads as a window in both themes. */
+.hero > img {
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 0.75rem;
+  box-shadow: 0 1.5rem 3rem -1rem rgb(0 0 0 / 0.25);
+}
+
 /* Wider content for the live examples: a slimmer left nav and a narrow, fixed "On this page". */
 :root {
   --sl-sidebar-width: 16rem;
