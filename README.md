@@ -3,7 +3,13 @@
 > A modular, extensible and themeable Angular SDK for viewing and signing PDF documents.
 
 [![CI](https://github.com/oscarandrespabonestrella/signora-pdf/actions/workflows/ci.yml/badge.svg)](https://github.com/oscarandrespabonestrella/signora-pdf/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/signora-pdf?label=npm&color=cb3837)](https://www.npmjs.com/package/signora-pdf)
+[![Docs](https://github.com/oscarandrespabonestrella/signora-pdf/actions/workflows/docs.yml/badge.svg)](https://oscarandrespabonestrella.github.io/signora-pdf/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
+**[Documentation](https://oscarandrespabonestrella.github.io/signora-pdf/)** · **[Live demo](https://oscarandrespabonestrella.github.io/signora-pdf/demos/)** ·
+**[API reference](https://oscarandrespabonestrella.github.io/signora-pdf/api/)** · **[npm](https://www.npmjs.com/package/signora-pdf)** ·
+[Documentación en español](https://oscarandrespabonestrella.github.io/signora-pdf/es/)
 
 **Status: `0.1.0-alpha`.** The architecture, the public API of the core and the viewer are in
 place, you can create and place visual signatures, export the result as a new PDF, and hand it
@@ -74,7 +80,8 @@ npm install pdf-lib
 npm install pdf-lib pkijs asn1js
 ```
 
-Requires Angular 22+.
+Requires Angular 22+. Step-by-step setup: [Installation](https://oscarandrespabonestrella.github.io/signora-pdf/getting-started/installation/)
+and [Quick start](https://oscarandrespabonestrella.github.io/signora-pdf/getting-started/quick-start/).
 
 Serve the PDF.js worker from your app, for example with an asset glob in `angular.json`:
 
@@ -153,12 +160,14 @@ in normalized page coordinates, independent of zoom and rotation; see
   compact guide with every input, method and recipe. It also ships in the package as
   `node_modules/signora-pdf/AGENTS.md`, so a coding agent can read it instead of exploring the
   source. Regenerate with `npm run docs:ai`; CI checks it stays complete.
+- **[Documentation site](https://oscarandrespabonestrella.github.io/signora-pdf/)** (English and Spanish): guides, live examples with their source,
+  and the [demos](https://oscarandrespabonestrella.github.io/signora-pdf/demos/).
 - [Architecture](docs/architecture.md) · [Coordinates](docs/coordinates.md) · [Theming](docs/theming.md) · [Viewer options](docs/viewer-options.md)
   · [Digital signing](docs/digital-signing.md) · [Signature fields](docs/signature-fields.md)
   · [Signing an already signed PDF](docs/incremental-signing.md) · [Validation](docs/validation.md)
   · [Roadmap](docs/roadmap.md)
-- **API reference**, generated from the source with TypeDoc: `npm run docs:api`, then open
-  `docs/api/index.html`. CI publishes it as a build artifact.
+- **[API reference](https://oscarandrespabonestrella.github.io/signora-pdf/api/)**, generated from the source with TypeDoc. Locally:
+  `npm run docs:api`, then open `docs/api/index.html`.
 
 ## Develop
 
@@ -171,7 +180,18 @@ npm run build:lib       # builds dist/signora-pdf
 npm run docs:api        # generates the API reference in docs/api
 npm run screenshots     # recaptures docs/images (needs npm start running and Edge/Chrome)
 npm run pack:lib        # builds and creates the npm tarball in dist/
+npm run docs:site       # builds the documentation site into website/dist
 ```
+
+## Release
+
+1. Bump `version` in `projects/signora-pdf/package.json` and update [CHANGELOG.md](CHANGELOG.md).
+2. Merge to `main`, then tag it: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+3. Run the **Release** workflow from the tag: `gh workflow run release.yml --ref vX.Y.Z`.
+
+The workflow publishes with npm [trusted publishing](https://docs.npmjs.com/trusted-publishers)
+and provenance, no token needed. Versions with a pre-release suffix (`-alpha.1`) go to the `next`
+dist-tag; the rest go to `latest`. The documentation site deploys on every push to `main`.
 
 The playground consumes the library only through its public API (`signora-pdf/*`).
 See [CONTRIBUTING.md](CONTRIBUTING.md).

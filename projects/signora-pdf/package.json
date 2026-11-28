@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/oscarandrespabonestrella/signora-pdf/issues"
   },
-  "homepage": "https://github.com/oscarandrespabonestrella/signora-pdf#readme",
+  "homepage": "https://oscarandrespabonestrella.github.io/signora-pdf/",
   "publishConfig": {
     "access": "public"
   },

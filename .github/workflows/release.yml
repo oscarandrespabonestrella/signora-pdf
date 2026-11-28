@@ -4,9 +4,11 @@ name: Release
 on:
   workflow_dispatch:
 
+# Publishes with npm trusted publishing (OIDC): no token. The trusted publisher is configured on
+# npmjs.com → signora-pdf → Settings → Trusted publishing (this repo, workflow release.yml).
 permissions:
   contents: read
-  id-token: write # npm provenance
+  id-token: write # OIDC for trusted publishing and provenance
 
 jobs:
   publish:
@@ -42,10 +44,11 @@ jobs:
             echo "Tag ${GITHUB_REF_NAME} does not match package version v${VERSION}" && exit 1
           fi
 
+      # Trusted publishing needs npm >= 11.5.1.
+      - run: npm install -g npm@^11.5.1
+
       - name: Publish
         working-directory: dist/signora-pdf
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           VERSION=$(node -p "require('./package.json').version")
           TAG=latest
