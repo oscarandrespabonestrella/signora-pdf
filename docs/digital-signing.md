@@ -2,8 +2,9 @@
 
 A **visual signature** is an image placed on a page. It proves nothing. A **digital signature**
 is a cryptographic seal made with a certificate, which lets a reader detect changes and identify
-the signer. These are separate stages, and **this library never performs cryptography**: it
-delegates it to a provider you control.
+the signer. These are separate stages, and **this library never creates signatures**: it
+delegates that to a provider you control. Reading existing signatures is covered in
+[validation.md](validation.md).
 
 ## The workflow
 
@@ -41,7 +42,10 @@ Register providers with `provideSignora()`:
 
 Or implement `DigitalSignatureProvider` / `CertificateProvider` yourself (a trust service SDK, a
 hardware token bridge...) and register it with `withDigitalSigner()` / `withCertificateProvider()`.
-`workflow.sign({ provider })` overrides the registered signer for a single call.
+`workflow.sign({ provider })` overrides the registered signer for a single call, and
+`workflow.sign({ export })` passes options to the visual export that runs first (for example
+`{ requireAllFields: true }` or `{ createFields: true }`; see
+[signature-fields.md](signature-fields.md#signing-into-a-field)). `export` is not sent to the provider.
 
 ## What the workflow guards against
 
@@ -67,7 +71,7 @@ Content-Type: multipart/form-data
 
 pdf        file, application/pdf   the document, visual signatures already embedded
 metadata   application/json        { certificateId?, level?, reason?, location?,
-                                      signerName?, options? }
+                                      signerName?, fieldName?, options? }
 
 200 application/pdf                 the signed PDF
 4xx/5xx                             optional JSON body { "message": "..." } (shown to the user)
@@ -83,6 +87,9 @@ GET {url}
 
 Dates are ISO 8601 strings.
 
+`fieldName` is the name of the PDF signature field to sign into (`SignatureField.pdfName`); see
+[signature-fields.md](signature-fields.md). Without it, the service decides where the signature goes.
+
 ## Building the server side
 
 Use an existing, audited implementation. For example an open-source PAdES library on your
@@ -92,7 +99,8 @@ use, and log what was signed.
 
 A pre-existing digital signature in the source document would be invalidated by the visual stage
 (pdf-lib rewrites the file), which is why the writer refuses already-signed PDFs by default.
-Place visual signatures first and sign last.
+Place visual signatures first and sign last. If the document is already signed, use the
+incremental writer instead: see [incremental-signing.md](incremental-signing.md).
 
 ## The playground
 

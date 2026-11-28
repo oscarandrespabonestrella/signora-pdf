@@ -31,6 +31,11 @@ export interface DigitalSignRequest {
   readonly reason?: string;
   readonly location?: string;
   readonly signerName?: string;
+  /**
+   * Name of the PDF signature field to sign into (`SignatureField.pdfName`). Without it the
+   * service decides where the signature goes.
+   */
+  readonly fieldName?: string;
   /** Free-form data forwarded to the provider (tokens, workflow ids...). */
   readonly options?: Readonly<Record<string, unknown>>;
 }

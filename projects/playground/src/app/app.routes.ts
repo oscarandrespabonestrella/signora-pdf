@@ -13,6 +13,12 @@ const EXAMPLES: Record<string, () => Promise<Type<unknown>>> = {
   'fields-editor': () => import('./examples/fields-editor').then((m) => m.FieldsEditorExample),
   coordinates: () => import('./examples/coordinates').then((m) => m.CoordinatesExample),
   'export-pdf': () => import('./examples/export-pdf').then((m) => m.ExportPdfExample),
+  'pdf-signature-fields': () =>
+    import('./examples/pdf-signature-fields').then((m) => m.PdfSignatureFieldsExample),
+  'append-signature': () =>
+    import('./examples/append-signature').then((m) => m.AppendSignatureExample),
+  'validate-signatures': () =>
+    import('./examples/validate-signatures').then((m) => m.ValidateSignaturesExample),
   theme: () => import('./examples/theme').then((m) => m.ThemeExample),
   'custom-toolbar': () => import('./examples/custom-toolbar').then((m) => m.CustomToolbarExample),
 };

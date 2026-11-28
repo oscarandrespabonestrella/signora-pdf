@@ -26,14 +26,22 @@
   "peerDependencies": {
     "@angular/common": "^22.3.0",
     "@angular/core": "^22.3.0",
+    "asn1js": "^3.0.0 || ^4.0.0",
     "pdf-lib": "^1.17.1",
-    "pdfjs-dist": "^5.0.0 || ^6.0.0"
+    "pdfjs-dist": "^5.0.0 || ^6.0.0",
+    "pkijs": "^3.0.0 || ^4.0.0"
   },
   "peerDependenciesMeta": {
+    "asn1js": {
+      "optional": true
+    },
     "pdf-lib": {
       "optional": true
     },
     "pdfjs-dist": {
+      "optional": true
+    },
+    "pkijs": {
       "optional": true
     }
   },
@@ -43,6 +51,7 @@
     "./pdfjs": "./pdfjs/src/public-api.ts",
     "./pdf-lib": "./pdf-lib/src/public-api.ts",
     "./ui": "./ui/src/public-api.ts",
-    "./http": "./http/src/public-api.ts"
+    "./http": "./http/src/public-api.ts",
+    "./validation": "./validation/src/public-api.ts"
   }
 }

@@ -5,6 +5,7 @@ import type {
   PdfRenderingPort,
   PdfWriterPort,
   SignatureProvider,
+  SignatureValidatorPort,
 } from './ports';
 
 /** Rendering engine used by the viewer. Provide it with `withRenderer()` or an adapter feature. */
@@ -26,4 +27,9 @@ export const SIGNORA_DIGITAL_SIGNER = new InjectionToken<DigitalSignatureProvide
 /** Source of signing certificates. Optional. */
 export const SIGNORA_CERTIFICATE_PROVIDER = new InjectionToken<CertificateProvider>(
   'SIGNORA_CERTIFICATE_PROVIDER',
+);
+
+/** Validator of the digital signatures already in a PDF. Optional. */
+export const SIGNORA_SIGNATURE_VALIDATOR = new InjectionToken<SignatureValidatorPort>(
+  'SIGNORA_SIGNATURE_VALIDATOR',
 );

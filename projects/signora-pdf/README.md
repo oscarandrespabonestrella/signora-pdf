@@ -22,6 +22,7 @@ Requires Angular 22+.
 ```bash
 npm install signora-pdf pdfjs-dist
 npm install pdf-lib # only to export the PDF with the signatures embedded
+npm install pdf-lib pkijs asn1js # only to validate existing signatures
 ```
 
 Serve the PDF.js worker with an asset glob in `angular.json`:
@@ -65,12 +66,13 @@ walkthrough: [Quick start](https://oscarandrespabonestrella.github.io/signora-pd
 
 ## Entry points
 
-| Entry point           | Contains                                         | Needs              |
-| --------------------- | ------------------------------------------------ | ------------------ |
-| `signora-pdf`         | models, ports, coordinates, `SigningSession`, DI | Angular only       |
-| `signora-pdf/pdfjs`   | PDF.js rendering adapter                         | `pdfjs-dist`       |
-| `signora-pdf/pdf-lib` | pdf-lib writer adapter                           | `pdf-lib`          |
-| `signora-pdf/ui`      | viewer, toolbar, signature panel, slots, theming | core               |
-| `signora-pdf/http`    | HTTP digital signature and certificate providers | core, `HttpClient` |
+| Entry point              | Contains                                         | Needs                        |
+| ------------------------ | ------------------------------------------------ | ---------------------------- |
+| `signora-pdf`            | models, ports, coordinates, `SigningSession`, DI | Angular only                 |
+| `signora-pdf/pdfjs`      | PDF.js rendering adapter                         | `pdfjs-dist`                 |
+| `signora-pdf/pdf-lib`    | pdf-lib writer, incremental updates, fields, DSS | `pdf-lib`                    |
+| `signora-pdf/ui`         | viewer, toolbar, signature panel, slots, theming | core                         |
+| `signora-pdf/http`       | HTTP digital signature and certificate providers | core, `HttpClient`           |
+| `signora-pdf/validation` | inspect and verify existing signatures, reports  | `pdf-lib`, `pkijs`, `asn1js` |
 
 MIT licensed.

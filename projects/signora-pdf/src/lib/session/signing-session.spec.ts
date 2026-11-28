@@ -357,6 +357,76 @@ describe('SigningSession', () => {
       expect(writer.applyVisualSignatures).toHaveBeenCalledTimes(1);
     });
 
+    describe('exportPdf({ createFields })', () => {
+      const setup = async (writerMethods: Record<string, unknown>) => {
+        TestBed.resetTestingModule();
+        FakeRenderer.pending = [];
+        TestBed.configureTestingModule({
+          providers: [
+            provideSignora(
+              withRenderer(FakeRenderer),
+              withWriter(
+                class {
+                  constructor() {
+                    Object.assign(this, writerMethods);
+                  }
+                } as never,
+              ),
+            ),
+          ],
+        });
+        session = TestBed.inject(SigningSession);
+        await loadWith(1);
+      };
+
+      it('creates only the fields that are not in the document yet, then draws the signatures', async () => {
+        const writeSignatureFields = vi.fn().mockResolvedValue(new Uint8Array([9]));
+        const applyVisualSignatures = vi.fn().mockResolvedValue(new Uint8Array([7]));
+        await setup({ writeSignatureFields, applyVisualSignatures });
+        session.setFields([field('new'), field('old', { inDocument: true, pdfName: 'Old' })]);
+        await session.fillField('new', asset);
+
+        expect(await session.exportPdf({ createFields: true })).toEqual(new Uint8Array([7]));
+        expect(writeSignatureFields).toHaveBeenCalledTimes(1);
+        expect(writeSignatureFields.mock.calls[0][1].map((f: { id: string }) => f.id)).toEqual([
+          'new',
+        ]);
+        // The signatures are drawn on the PDF that already has the fields.
+        expect(applyVisualSignatures.mock.calls[0][0]).toEqual(new Uint8Array([9]));
+      });
+
+      it('returns the PDF with the new fields when there is nothing to draw', async () => {
+        const writeSignatureFields = vi.fn().mockResolvedValue(new Uint8Array([9]));
+        const applyVisualSignatures = vi.fn();
+        await setup({ writeSignatureFields, applyVisualSignatures });
+        session.setFields([field('new')]);
+
+        expect(await session.exportPdf({ createFields: true })).toEqual(new Uint8Array([9]));
+        expect(applyVisualSignatures).not.toHaveBeenCalled();
+      });
+
+      it('does nothing special without the option or when every field is already in the document', async () => {
+        const writeSignatureFields = vi.fn();
+        const applyVisualSignatures = vi.fn().mockResolvedValue(new Uint8Array([7]));
+        await setup({ writeSignatureFields, applyVisualSignatures });
+        session.setFields([field('new'), field('old', { inDocument: true })]);
+
+        await session.exportPdf();
+        session.setFields([field('old', { inDocument: true })]);
+        await session.exportPdf({ createFields: true });
+        expect(writeSignatureFields).not.toHaveBeenCalled();
+        expect(applyVisualSignatures).toHaveBeenCalledTimes(2);
+      });
+
+      it('fails clearly when the writer cannot create fields', async () => {
+        await setup({ applyVisualSignatures: vi.fn() });
+        session.setFields([field('new')]);
+        await expect(session.exportPdf({ createFields: true })).rejects.toThrow(
+          /cannot create signature fields/,
+        );
+      });
+    });
+
     it('setFields keeps signatures of fields that remain and drops the rest', async () => {
       session.setFields([field('f1'), field('f2')]);
       await session.fillField('f1', asset);

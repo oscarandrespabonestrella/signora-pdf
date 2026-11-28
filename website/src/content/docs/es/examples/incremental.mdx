@@ -1,0 +1,14 @@
+---
+title: 'Ejemplos: PDF ya firmados'
+description: Añade una firma visual a un PDF ya firmado digitalmente sin invalidarlo, con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+## Añadir una firma sin romper las otras
+
+El PDF de muestra lleva una firma digital real. Coloca una firma y añádela: el archivo conserva
+todos los bytes originales, así que la primera firma sigue validando; el informe avisa de que
+existe una revisión posterior. Ver [firmar un PDF ya firmado](../../guides/incremental-signing/).
+
+<Example name="append-signature" title="Añadir una firma" height={700} />

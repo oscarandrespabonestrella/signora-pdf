@@ -1,0 +1,14 @@
+---
+title: 'Examples: already-signed PDFs'
+description: Add a visual signature to a PDF that is already digitally signed, keeping it valid, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+## Add a signature without breaking the others
+
+The sample PDF carries a real digital signature. Place a signature and add it: the file keeps every
+original byte, so the first signature still validates; the report shows a warning that a later
+revision exists. See [signing an already signed PDF](../../guides/incremental-signing/).
+
+<Example name="append-signature" title="Append a signature" height={700} />

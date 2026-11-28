@@ -12,6 +12,8 @@ permissions:
 
 jobs:
   publish:
+    # Only from a version tag (run the workflow with "Use workflow from" set to the tag).
+    if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -23,9 +25,24 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - run: npm ci
+      - run: npm run format:check
       - run: npm run lint
+      - run: npm run docs:ai:check
       - run: npm test
       - run: npm run build:lib
+
+      - name: Core must not bundle PDF engines
+        run: |
+          if grep -E "pdfjs-dist|pdf-lib|pkijs|asn1js" dist/signora-pdf/fesm2022/signora-pdf.mjs dist/signora-pdf/fesm2022/signora-pdf-ui.mjs dist/signora-pdf/fesm2022/signora-pdf-http.mjs; then
+            echo "Core/UI bundles reference a PDF engine" && exit 1
+          fi
+
+      - name: Tag matches the package version
+        run: |
+          VERSION=$(node -p "require('./dist/signora-pdf/package.json').version")
+          if [[ "${GITHUB_REF_NAME}" != "v${VERSION}" ]]; then
+            echo "Tag ${GITHUB_REF_NAME} does not match package version v${VERSION}" && exit 1
+          fi
 
       # Trusted publishing needs npm >= 11.5.1.
       - run: npm install -g npm@^11.5.1

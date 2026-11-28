@@ -35,7 +35,15 @@ module.exports = defineConfig([
         {
           patterns: [
             {
-              group: ['pdfjs-dist', 'pdfjs-dist/*', 'pdf-lib', 'pdf-lib/*'],
+              group: [
+                'pdfjs-dist',
+                'pdfjs-dist/*',
+                'pdf-lib',
+                'pdf-lib/*',
+                'pkijs',
+                'pkijs/*',
+                'asn1js',
+              ],
               message:
                 'Core and UI must not depend on PDF.js or pdf-lib. Use the ports and put adapters in signora-pdf/pdfjs or signora-pdf/pdf-lib.',
             },

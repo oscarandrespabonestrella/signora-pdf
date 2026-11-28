@@ -7,7 +7,8 @@
     "projects/signora-pdf/pdfjs/src/public-api.ts",
     "projects/signora-pdf/pdf-lib/src/public-api.ts",
     "projects/signora-pdf/ui/src/public-api.ts",
-    "projects/signora-pdf/http/src/public-api.ts"
+    "projects/signora-pdf/http/src/public-api.ts",
+    "projects/signora-pdf/validation/src/public-api.ts"
   ],
   "out": "docs/api",
   "readme": "none",

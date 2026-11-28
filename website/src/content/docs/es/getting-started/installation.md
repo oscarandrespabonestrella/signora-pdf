@@ -22,7 +22,14 @@ Añade pdf-lib solo si quieres exportar en el navegador el PDF con las firmas in
 npm install pdf-lib
 ```
 
-`pdfjs-dist` y `pdf-lib` son **dependencias peer opcionales**: instala solo lo que uses, o
+Para inspeccionar y validar las firmas que ya tiene un PDF (`signora-pdf/validation`), añade también
+PKI.js:
+
+```bash
+npm install pdf-lib pkijs asn1js
+```
+
+`pdfjs-dist`, `pdf-lib`, `pkijs` y `asn1js` son **dependencias peer opcionales**: instala solo lo que uses, o
 implementa los puertos con otro motor. Cada motor vive en su propio punto de entrada, así que un
 motor que no importas nunca acaba en tu bundle.
 
@@ -30,9 +37,10 @@ motor que no importas nunca acaba en tu bundle.
 | --------------------- | -------------------------------------------------------- | -------------------- |
 | `signora-pdf`         | modelos, puertos, coordenadas, `SigningSession`, DI      | solo Angular         |
 | `signora-pdf/pdfjs`   | implementación del puerto de renderizado con PDF.js      | `pdfjs-dist`         |
-| `signora-pdf/pdf-lib` | implementación del puerto de escritura con pdf-lib       | `pdf-lib`            |
+| `signora-pdf/pdf-lib` | escritura con pdf-lib, actualizaciones incrementales, campos, DSS | `pdf-lib`   |
 | `signora-pdf/ui`      | visor, página, barra, panel de firmas, directiva de tema | núcleo               |
 | `signora-pdf/http`    | proveedores HTTP de firma digital y de certificados      | núcleo, `HttpClient` |
+| `signora-pdf/validation` | inspeccionar y verificar firmas existentes, informes | `pdf-lib`, `pkijs`, `asn1js` |
 
 ## 2. Sirve el worker de PDF.js
 

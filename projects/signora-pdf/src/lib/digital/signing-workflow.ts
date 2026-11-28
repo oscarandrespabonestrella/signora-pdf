@@ -5,7 +5,7 @@ import type {
   DigitalSignResult,
   DigitalSignatureProvider,
 } from '../ports';
-import { SigningSession } from '../session';
+import { SigningSession, type ExportPdfOptions } from '../session';
 import { SIGNORA_CERTIFICATE_PROVIDER, SIGNORA_DIGITAL_SIGNER } from '../tokens';
 import { DigitalSigningError } from './errors';
 import { hasDigitalSignature, looksLikePdf } from './pdf-signature-detection';
@@ -14,6 +14,13 @@ import { hasDigitalSignature, looksLikePdf } from './pdf-signature-detection';
 export interface SignDocumentOptions extends Omit<DigitalSignRequest, 'pdf'> {
   /** Signs with this provider instead of the one registered with `withDigitalSigner()`. */
   readonly provider?: DigitalSignatureProvider;
+  /**
+   * Options of the visual export that runs first (see {@link SigningSession.exportPdf}). Use
+   * `{ createFields: true }` to write fields that exist only in the session before signing into
+   * one of them with `fieldName`, and `{ requireAllFields: true }` to refuse to sign while a
+   * required field is empty. Not sent to the provider.
+   */
+  readonly export?: ExportPdfOptions;
 }
 
 /**
@@ -44,11 +51,12 @@ export class SigningWorkflow {
    * Exports the document with its visual signatures and digitally signs it.
    * The loaded document is not modified.
    *
+   * @throws {MissingSignatureFieldsError} with `export.requireAllFields` while a required field is empty.
    * @throws {DigitalSigningError} if no signer is available, or if a provider claims to have
    * produced a cryptographic signature but returned something that is not a signed PDF.
    */
   async sign(options: SignDocumentOptions = {}): Promise<DigitalSignResult> {
-    const { provider, ...request } = options;
+    const { provider, export: exportOptions, ...request } = options;
     const signer = provider ?? this.defaultSigner;
     if (!signer) {
       throw new DigitalSigningError(
@@ -58,7 +66,7 @@ export class SigningWorkflow {
 
     this._busy.set(true);
     try {
-      const pdf = await this.session.exportPdf();
+      const pdf = await this.session.exportPdf(exportOptions);
       const result = await signer.sign({ ...request, pdf });
 
       if (!looksLikePdf(result.pdf)) {

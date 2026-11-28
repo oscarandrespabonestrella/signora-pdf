@@ -8,6 +8,23 @@ All notable changes to this project are documented here. The format is based on
 
 ### Added
 
+- `signora-pdf/validation` (optional peers `pdf-lib`, `pkijs`, `asn1js`): `inspectPdfSignatures()`
+  and `validatePdfSignatures()` check byte ranges, CMS integrity and signature
+  (`adbe.pkcs7.detached`, `ETSI.CAdES.detached`, `ETSI.RFC3161`), RFC 3161 timestamps, certificate
+  chains against caller-provided `trustAnchors`, CRL and OCSP revocation (`revocation`,
+  `revocationData`, `fetchRevocation`, `httpRevocationFetcher()`), the document's DSS, the PAdES level
+  (B-B to B-LTA) and what changed after each signature (`laterRevisions`, DocMDP and FieldMDP).
+  Reports serialize with `serializeValidationReport()`; DI through `withPdfSignatureValidation()`
+  or `withSignatureValidator()`. See `docs/validation.md`.
+- Incremental updates in `signora-pdf/pdf-lib`: `withPdfLibWriter({ mode: 'incremental' | 'auto' })`
+  and `appendVisualSignatures()` add visual signatures to an already signed PDF without
+  invalidating it; `IncrementalUpdate` for custom changes. See `docs/incremental-signing.md`.
+- Signature fields in the PDF: `readSignatureFields()`, `addSignatureFields()`,
+  `session.exportPdf({ createFields })` and `fieldName` in the signing request. See
+  `docs/signature-fields.md`.
+- `readDss()`, `appendDss()` and `dssSignatureKey()` to read and write the Document Security Store.
+- `workflow.sign({ export })` forwards `ExportPdfOptions` (`createFields`, `requireAllFields`) to the
+  visual export that runs before signing.
 - Collapsible signature panel: an edge button folds the panel away, and it starts collapsed when
   the viewer is narrower than `signaturePanelBreakpoint` (default 760 px). New labels
   `showSignaturePanel` and `hideSignaturePanel`.
@@ -33,6 +50,14 @@ All notable changes to this project are documented here. The format is based on
 
 ### Fixed
 
+- The default `'rewrite'` writer no longer throws `PdfAlreadySignedError` (nor rewrites the file)
+  when there are no placements: it returns the bytes unchanged, so a second signer can sign without
+  adding a visual signature.
+- The `asn1js` peer range now accepts `^4.0.0`, which `pkijs@4` requires; the signer lookup by
+  subject key identifier no longer depends on both sharing one copy of `asn1js`.
+- Incremental updates find `startxref` even when a file has more than 2 KB of padding after `%%EOF`.
+- Signing times with out-of-range fields (month 13, 31 February...) are reported as absent instead of
+  rolling over to another date.
 - Keyboard users could not scroll the page: the scrollable area is now the single focus stop.
 - The signature panel no longer emits a fixed heading level.
 - Signature thumbnails, the drawing pad and the typed preview always sit on paper, so dark ink

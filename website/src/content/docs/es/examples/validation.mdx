@@ -1,0 +1,16 @@
+---
+title: 'Ejemplos: validación'
+description: Comprueba en el navegador las firmas digitales de un PDF, con demo en vivo y código.
+---
+
+import Example from '../../../../components/Example.astro';
+
+## Validar firmas
+
+Requiere `pdf-lib`, `pkijs` y `asn1js`. El archivo se verifica en el navegador; no se sube nada.
+Prueba la muestra manipulada: se cambió un byte del contenido firmado, así que la firma informa
+`DIGEST_MISMATCH`. Sin anclas de confianza, `valid` solo significa que la firma está íntegra. Marca
+"Trust the test CAs" para comprobar al firmante y a la autoridad de sellado contra ellas (la
+revocación nunca se comprueba). Ver [validación](../../guides/validation/).
+
+<Example name="validate-signatures" title="Validar firmas" height={560} />

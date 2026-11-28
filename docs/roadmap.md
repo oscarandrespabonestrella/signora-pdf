@@ -17,7 +17,15 @@ Milestones follow the intended development order. ✅ = done.
    services, a `CertificateProvider` for remote certificates, and a clearly labelled simulated
    provider for demos. No cryptography is implemented in the library.
 8. **Playground and docs**: signature tabs, live theme panel, digital signing demo, integration
-   tests, generated API docs, screenshots, first stable release.
+   tests, generated API docs, screenshots, bilingual documentation site. First stable release
+   pending.
+9. ✅ **Signature fields**: reserved areas in the viewer, read from and written into the PDF.
+10. ✅ **Incremental updates**: add signatures, fields and the DSS to a signed PDF without
+    invalidating it.
+11. ✅ **Validation** (`signora-pdf/validation`): integrity, CMS, timestamps, chains, CRL/OCSP, DSS,
+    PAdES B-B to B-LTA, changes after signing. Remaining work (collecting a document's validation
+    data automatically, requiring the timestamp authority's own evidence for B-LT) is tracked in
+    `SIGNORA_GAP_ANALYSIS.md`.
 
-Ideas after 1.0: continuous scrolling with virtualized pages, thumbnails sidebar, text
-selection and search, form fields, i18n bundles.
+Ideas after 1.0: virtualized pages, thumbnails sidebar, text selection and search, filling other
+AcroForm field types, i18n bundles.

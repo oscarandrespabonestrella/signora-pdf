@@ -83,8 +83,20 @@ describe('PdfLibDocumentWriter', () => {
     );
     expect(hasDigitalSignature(signed)).toBe(true);
     expect(hasDigitalSignature(await createPdf())).toBe(false);
-    await expect(writer().applyVisualSignatures(signed, [])).rejects.toBeInstanceOf(
+    await expect(writer().applyVisualSignatures(signed, [placement(0)])).rejects.toBeInstanceOf(
       PdfAlreadySignedError,
     );
+  });
+
+  it('returns the bytes unchanged when there is nothing to add, even if already signed', async () => {
+    const signed = new TextEncoder().encode(
+      '%PDF-1.7\n<< /Type /Sig /ByteRange [0 10 20 30] /Contents <00> >>\n',
+    );
+    const subject = writer();
+    const out = await subject.applyVisualSignatures(signed, []);
+    expect(out).toEqual(signed);
+    expect(out).not.toBe(signed);
+    const plain = await createPdf();
+    expect(await subject.applyVisualSignatures(plain, [])).toEqual(plain);
   });
 });
