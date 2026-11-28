@@ -42,7 +42,7 @@ jobs:
 
       - name: Core must not bundle PDF engines
         run: |
-          if grep -E "pdfjs-dist|pdf-lib" dist/signora-pdf/fesm2022/signora-pdf.mjs dist/signora-pdf/fesm2022/signora-pdf-ui.mjs dist/signora-pdf/fesm2022/signora-pdf-http.mjs; then
+          if grep -E "pdfjs-dist|pdf-lib|pkijs|asn1js" dist/signora-pdf/fesm2022/signora-pdf.mjs dist/signora-pdf/fesm2022/signora-pdf-ui.mjs dist/signora-pdf/fesm2022/signora-pdf-http.mjs; then
             echo "Core/UI bundles reference a PDF engine" && exit 1
           fi
 
@@ -64,3 +64,22 @@ jobs:
         with:
           name: api-reference
           path: docs/api
+
+  # The validation entry point supports pkijs 3 + asn1js 3 as well as 4 + 4 (see the peer ranges).
+  validation-compat:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Install the oldest supported PKI.js
+        run: npm install --no-save pkijs@3 asn1js@3
+
+      - name: Validation tests
+        run: npx ng test signora-pdf --watch=false --include="**/validation/**/*.spec.ts"

@@ -45,7 +45,9 @@ Registra los proveedores con `provideSignora()`:
 O implementa tú mismo `DigitalSignatureProvider` / `CertificateProvider` (un SDK de un servicio de
 confianza, un puente a un token hardware...) y regístralo con `withDigitalSigner()` /
 `withCertificateProvider()`. `workflow.sign({ provider })` sustituye al firmador registrado en una
-sola llamada.
+sola llamada, y `workflow.sign({ export })` pasa opciones a la exportación visual que se hace antes
+(por ejemplo `{ requireAllFields: true }` o `{ createFields: true }`; ver
+[campos de firma](../signature-fields/)). `export` no se envía al proveedor.
 
 ## Contra qué protege el flujo
 

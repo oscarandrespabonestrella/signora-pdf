@@ -35,6 +35,12 @@ export type SessionStatus = 'idle' | 'loading' | 'ready' | 'error';
 export interface ExportPdfOptions {
   /** Reject with {@link MissingSignatureFieldsError} while a required field is empty. */
   readonly requireAllFields?: boolean;
+  /**
+   * Also create the session's fields that are not in the document yet (`inDocument` not set) as
+   * empty PDF signature fields, so a backend can sign into them by `pdfName`. Needs a writer that
+   * implements `writeSignatureFields` (the pdf-lib one does). Default `false`.
+   */
+  readonly createFields?: boolean;
 }
 
 /**
@@ -393,7 +399,21 @@ export class SigningSession {
         'SigningSession.exportPdf(): no PDF writer is registered. Add withPdfLibWriter() to provideSignora().',
       );
     }
-    return this.writer.applyVisualSignatures(await document.getData(), this._placements());
+    let bytes = await document.getData();
+    const placements = this._placements();
+    if (options.createFields) {
+      const fresh = this._fields().filter((field) => !field.inDocument);
+      if (fresh.length > 0) {
+        if (!this.writer.writeSignatureFields) {
+          throw new Error(
+            'SigningSession.exportPdf(): the registered writer cannot create signature fields (writeSignatureFields).',
+          );
+        }
+        bytes = await this.writer.writeSignatureFields(bytes, fresh);
+        if (placements.length === 0) return bytes;
+      }
+    }
+    return this.writer.applyVisualSignatures(bytes, placements);
   }
 
   /**

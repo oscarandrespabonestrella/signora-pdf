@@ -17,4 +17,15 @@ export interface SignatureField {
   readonly required?: boolean;
   /** Who is expected to sign it. Not enforced here: for your own workflow. */
   readonly signerId?: string;
+  /**
+   * Name of the PDF signature field (AcroForm `/T`). Set on fields read from a document with
+   * `readSignatureFields()`; for a new field it is the name it is created with (default: derived
+   * from `label` or `id`). A backend uses it to sign into the field.
+   */
+  readonly pdfName?: string;
+  /**
+   * The field already exists in the PDF (it was read from it). Exporting with `createFields` never
+   * creates it again.
+   */
+  readonly inDocument?: boolean;
 }

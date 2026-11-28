@@ -3,24 +3,42 @@ import {
   SIGNORA_WRITER,
   createSignoraFeature,
   hasDigitalSignature,
-  normalizeRotation,
-  type PageInfo,
   type PdfWriterPort,
   type PlacedSignature,
   type SignatureAsset,
+  type SignatureField,
   type SignoraFeature,
 } from 'signora-pdf';
 import type { PDFDocument, PDFImage } from 'pdf-lib';
+import { appendVisualSignatures, type AppendVisualSignaturesOptions } from './incremental-writer';
+import { pageInfo } from './page-info';
+import { addSignatureFields } from './signature-fields-writer';
 import { computeImageDrawing } from './placement-transform';
+import { decodeSignatureImage } from './signature-image';
+
+export { UnsupportedSignatureImageError } from './signature-image';
 
 /** Options of {@link withPdfLibWriter}. */
 export interface PdfLibWriterOptions {
   /**
-   * pdf-lib rewrites the whole file, which invalidates existing digital
+   * How the signatures are written:
+   *
+   * - `'rewrite'` (default): the whole file is rewritten and the images are drawn on the page.
+   *   This invalidates existing digital signatures, so a signed PDF is refused (see below).
+   * - `'incremental'`: the original bytes are kept and the signatures are appended as stamp
+   *   annotations in an incremental update. Existing digital signatures stay valid. See
+   *   {@link appendVisualSignatures}.
+   * - `'auto'`: incremental when the PDF already has a digital signature, rewrite otherwise.
+   */
+  readonly mode?: 'rewrite' | 'incremental' | 'auto';
+  /**
+   * In `'rewrite'` mode pdf-lib rewrites the whole file, which invalidates existing digital
    * signatures. By default the writer refuses to modify a PDF that already
    * contains one; set this to `true` to proceed anyway.
    */
   readonly allowInvalidatingExistingSignatures?: boolean;
+  /** Options for the incremental modes. */
+  readonly incremental?: AppendVisualSignaturesOptions;
 }
 
 /** Injection token holding the {@link PdfLibWriterOptions}. Set by {@link withPdfLibWriter}. */
@@ -39,14 +57,6 @@ export class PdfAlreadySignedError extends Error {
   }
 }
 
-/** A signature asset could not be decoded into an embeddable image. */
-export class UnsupportedSignatureImageError extends Error {
-  constructor(assetId: string) {
-    super(`Signature asset "${assetId}" is not a PNG or JPEG data URL.`);
-    this.name = 'UnsupportedSignatureImageError';
-  }
-}
-
 /**
  * {@link PdfWriterPort} implemented on top of pdf-lib. It draws each placed
  * signature as an image on its page, using the same normalized coordinates the
@@ -59,10 +69,24 @@ export class UnsupportedSignatureImageError extends Error {
 export class PdfLibDocumentWriter implements PdfWriterPort {
   private readonly options = inject(SIGNORA_PDF_LIB_OPTIONS);
 
+  /**
+   * Adds empty signature fields as an incremental update, whatever the {@link
+   * PdfLibWriterOptions.mode}: it never invalidates existing signatures. See {@link addSignatureFields}.
+   */
+  writeSignatureFields(pdf: Uint8Array, fields: readonly SignatureField[]): Promise<Uint8Array> {
+    return addSignatureFields(pdf, fields, this.options.incremental);
+  }
+
   async applyVisualSignatures(
     pdf: Uint8Array,
     placements: readonly PlacedSignature[],
   ): Promise<Uint8Array> {
+    // Nothing to draw: keep the file as it is (rewriting it would invalidate existing signatures).
+    if (placements.length === 0) return pdf.slice();
+    const mode = this.options.mode ?? 'rewrite';
+    if (mode === 'incremental' || (mode === 'auto' && hasDigitalSignature(pdf))) {
+      return appendVisualSignatures(pdf, placements, this.options.incremental);
+    }
     if (!this.options.allowInvalidatingExistingSignatures && hasDigitalSignature(pdf)) {
       throw new PdfAlreadySignedError();
     }
@@ -95,19 +119,6 @@ export class PdfLibDocumentWriter implements PdfWriterPort {
   }
 }
 
-function pageInfo(page: ReturnType<PDFDocument['getPages']>[number], index: number): PageInfo {
-  const { x, y, width, height } = page.getCropBox();
-  const rotation = normalizeRotation(page.getRotation().angle);
-  const swap = rotation === 90 || rotation === 270;
-  return {
-    index,
-    width: swap ? height : width,
-    height: swap ? width : height,
-    rotation,
-    view: [x, y, x + width, y + height],
-  };
-}
-
 async function embed(
   document: PDFDocument,
   cache: Map<string, PDFImage>,
@@ -116,11 +127,8 @@ async function embed(
   const cached = cache.get(asset.id);
   if (cached) return cached;
 
-  const match = /^data:image\/(png|jpe?g);base64,(.*)$/s.exec(asset.dataUrl);
-  if (!match) throw new UnsupportedSignatureImageError(asset.id);
-  const bytes = Uint8Array.from(atob(match[2]), (c) => c.charCodeAt(0));
-  const image =
-    match[1] === 'png' ? await document.embedPng(bytes) : await document.embedJpg(bytes);
+  const { format, bytes } = decodeSignatureImage(asset);
+  const image = format === 'png' ? await document.embedPng(bytes) : await document.embedJpg(bytes);
   cache.set(asset.id, image);
   return image;
 }

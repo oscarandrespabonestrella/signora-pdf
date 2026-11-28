@@ -7,8 +7,10 @@
 
 **Status: `0.1.0-alpha`.** The architecture, the public API of the core and the viewer are in
 place, you can create and place visual signatures, export the result as a new PDF, and hand it
-to a signing backend for a digital signature ([docs](docs/digital-signing.md)). The library does
-not ship a backend or any cryptography. The API may change before `1.0`.
+to a signing backend for a digital signature ([docs](docs/digital-signing.md)). It can also add
+signatures and signature fields to an already signed PDF without breaking it, and inspect and
+validate the signatures a PDF carries ([docs](docs/validation.md)). The library does not ship a
+backend and never creates cryptographic signatures. The API may change before `1.0`.
 
 ![Signing a contract in the playground: a hand-drawn signature on the signature line and an organization stamp, with the signature panel on the right](docs/images/viewer-signing.png)
 
@@ -40,20 +42,24 @@ not ship a backend or any cryptography. The API may change before `1.0`.
 | Drag, resize, keyboard and drag-and-drop placement; multiple signatures and pages | ✅                                  |
 | Visual export with pdf-lib (`session.exportPdf()`), CropBox and `/Rotate` aware   | ✅                                  |
 | Digital signing through your backend (HTTP provider, PAdES levels as metadata)    | ✅ client side; the server is yours |
+| Signature fields: lay out, fill, read from and write into the PDF                 | ✅                                  |
+| Incremental updates: sign an already signed PDF without invalidating it           | ✅                                  |
+| Validation: integrity, CMS, timestamps, chains, CRL/OCSP, DSS, PAdES B-B to B-LTA | ✅ verifies only, never signs       |
 
 ## Design in one minute
 
 The SDK is split in entry points so that dependencies are enforced by packaging, not discipline:
 
-| Entry point           | Contains                                                      | Depends on         |
-| --------------------- | ------------------------------------------------------------- | ------------------ |
-| `signora-pdf`         | models, ports (interfaces), coordinates, `SigningSession`, DI | Angular only       |
-| `signora-pdf/pdfjs`   | PDF.js implementation of the rendering port                   | `pdfjs-dist`       |
-| `signora-pdf/pdf-lib` | pdf-lib implementation of the writer port                     | `pdf-lib`          |
-| `signora-pdf/ui`      | viewer, page, toolbar, template slots, theme directive        | core               |
-| `signora-pdf/http`    | HTTP digital signature and certificate providers              | core, `HttpClient` |
+| Entry point              | Contains                                                      | Depends on                   |
+| ------------------------ | ------------------------------------------------------------- | ---------------------------- |
+| `signora-pdf`            | models, ports (interfaces), coordinates, `SigningSession`, DI | Angular only                 |
+| `signora-pdf/pdfjs`      | PDF.js implementation of the rendering port                   | `pdfjs-dist`                 |
+| `signora-pdf/pdf-lib`    | pdf-lib implementation of the writer port                     | `pdf-lib`                    |
+| `signora-pdf/ui`         | viewer, page, toolbar, template slots, theme directive        | core                         |
+| `signora-pdf/http`       | HTTP digital signature and certificate providers              | core, `HttpClient`           |
+| `signora-pdf/validation` | inspect and verify existing signatures, validation reports    | `pdf-lib`, `pkijs`, `asn1js` |
 
-`pdfjs-dist` and `pdf-lib` are **optional peer dependencies**: install only what you use, or
+`pdfjs-dist`, `pdf-lib`, `pkijs` and `asn1js` are **optional peer dependencies**: install only what you use, or
 implement the ports with another engine. Cryptographic signing is deliberately separate from
 visual signing, and the library never implements cryptography itself.
 Read [docs/architecture.md](docs/architecture.md) for details.
@@ -62,8 +68,10 @@ Read [docs/architecture.md](docs/architecture.md) for details.
 
 ```bash
 npm install signora-pdf pdfjs-dist
-# for visual export:
+# for visual export, signature fields and incremental updates:
 npm install pdf-lib
+# for signature validation (signora-pdf/validation):
+npm install pdf-lib pkijs asn1js
 ```
 
 Requires Angular 22+.
@@ -146,7 +154,9 @@ in normalized page coordinates, independent of zoom and rotation; see
   `node_modules/signora-pdf/AGENTS.md`, so a coding agent can read it instead of exploring the
   source. Regenerate with `npm run docs:ai`; CI checks it stays complete.
 - [Architecture](docs/architecture.md) · [Coordinates](docs/coordinates.md) · [Theming](docs/theming.md) · [Viewer options](docs/viewer-options.md)
-  · [Digital signing](docs/digital-signing.md) · [Roadmap](docs/roadmap.md)
+  · [Digital signing](docs/digital-signing.md) · [Signature fields](docs/signature-fields.md)
+  · [Signing an already signed PDF](docs/incremental-signing.md) · [Validation](docs/validation.md)
+  · [Roadmap](docs/roadmap.md)
 - **API reference**, generated from the source with TypeDoc: `npm run docs:api`, then open
   `docs/api/index.html`. CI publishes it as a build artifact.
 

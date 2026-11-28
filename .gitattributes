@@ -1,0 +1,13 @@
+# Keep LF in the working tree on every platform: Prettier checks for LF, and Windows
+# checkouts with core.autocrlf=true would otherwise get CRLF.
+* text=auto eol=lf
+
+*.pdf binary
+*.der binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.tgz binary

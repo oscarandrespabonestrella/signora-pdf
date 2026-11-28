@@ -12,6 +12,9 @@ const pages = {
   'viewer-options': 'guides',
   theming: 'guides',
   'digital-signing': 'guides',
+  'incremental-signing': 'guides',
+  'signature-fields': 'guides',
+  validation: 'guides',
   architecture: 'concepts',
   coordinates: 'concepts',
 };

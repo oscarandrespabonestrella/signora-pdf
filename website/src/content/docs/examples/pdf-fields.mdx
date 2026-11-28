@@ -1,0 +1,14 @@
+---
+title: 'Examples: PDF signature fields'
+description: Create real signature fields in a PDF and read them back, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+## Create signature fields in the PDF
+
+Lay the fields out on the page, then create them in the file as real AcroForm signature fields.
+They are empty: a backend signs into them by name. The result is read back with
+`readSignatureFields()`. See [signature fields in the PDF](../../guides/signature-fields/).
+
+<Example name="pdf-signature-fields" title="Create PDF signature fields" height={700} />

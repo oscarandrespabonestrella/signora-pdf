@@ -1,0 +1,16 @@
+---
+title: 'Examples: validation'
+description: Check the digital signatures of a PDF in the browser, with live demo and code.
+---
+
+import Example from '../../../components/Example.astro';
+
+## Validate signatures
+
+Needs `pdf-lib`, `pkijs` and `asn1js`. The file is verified in the browser; nothing is uploaded.
+Try the tampered sample: one byte of the signed content was changed, so the signature reports
+`DIGEST_MISMATCH`. Without trust anchors a `valid` result means only that the signature is intact. Tick
+"Trust the test CAs" to check the signer and the timestamp authority against them (revocation is
+never checked). See [validation](../../guides/validation/).
+
+<Example name="validate-signatures" title="Validate signatures" height={560} />

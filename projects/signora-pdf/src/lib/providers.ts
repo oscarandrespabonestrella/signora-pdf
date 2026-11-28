@@ -10,6 +10,7 @@ import type {
   PdfRenderingPort,
   PdfWriterPort,
   SignatureProvider,
+  SignatureValidatorPort,
 } from './ports';
 import { SigningWorkflow } from './digital';
 import { SigningSession } from './session';
@@ -18,6 +19,7 @@ import {
   SIGNORA_DIGITAL_SIGNER,
   SIGNORA_RENDERER,
   SIGNORA_SIGNATURE_PROVIDERS,
+  SIGNORA_SIGNATURE_VALIDATOR,
   SIGNORA_WRITER,
 } from './tokens';
 
@@ -28,6 +30,7 @@ export type SignoraFeatureKind =
   | 'signature-provider'
   | 'digital-signer'
   | 'certificate-provider'
+  | 'signature-validator'
   | (string & {});
 
 /**
@@ -100,5 +103,12 @@ export function withDigitalSigner(signer: Type<DigitalSignatureProvider>): Signo
 export function withCertificateProvider(provider: Type<CertificateProvider>): SignoraFeature {
   return createSignoraFeature('certificate-provider', [
     { provide: SIGNORA_CERTIFICATE_PROVIDER, useClass: provider },
+  ]);
+}
+
+/** Registers the validator of existing signatures (see `withPdfSignatureValidation()` in `signora-pdf/validation`). */
+export function withSignatureValidator(validator: Type<SignatureValidatorPort>): SignoraFeature {
+  return createSignoraFeature('signature-validator', [
+    { provide: SIGNORA_SIGNATURE_VALIDATOR, useClass: validator },
   ]);
 }

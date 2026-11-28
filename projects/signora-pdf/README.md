@@ -20,12 +20,14 @@ provideSignora(withPdfJsRenderer({ workerSrc: '/assets/pdfjs/pdf.worker.min.mjs'
 <signora-viewer [source]="url" />
 ```
 
-| Entry point           | Contains                                         |
-| --------------------- | ------------------------------------------------ |
-| `signora-pdf`         | models, ports, coordinates, `SigningSession`, DI |
-| `signora-pdf/pdfjs`   | PDF.js rendering adapter (peer: `pdfjs-dist`)    |
-| `signora-pdf/pdf-lib` | pdf-lib writer adapter (peer: `pdf-lib`)         |
-| `signora-pdf/ui`      | viewer, toolbar, slots, theme directive          |
+| Entry point              | Contains                                                            |
+| ------------------------ | ------------------------------------------------------------------- |
+| `signora-pdf`            | models, ports, coordinates, `SigningSession`, DI                    |
+| `signora-pdf/pdfjs`      | PDF.js rendering adapter (peer: `pdfjs-dist`)                       |
+| `signora-pdf/pdf-lib`    | pdf-lib writer, incremental updates, fields, DSS (peer: `pdf-lib`)  |
+| `signora-pdf/ui`         | viewer, toolbar, slots, theme directive                             |
+| `signora-pdf/http`       | HTTP digital signer and certificate provider                        |
+| `signora-pdf/validation` | inspect and verify signatures (peers: `pdf-lib`, `pkijs`, `asn1js`) |
 
 Full documentation: https://github.com/oscarandrespabonestrella/signora-pdf#readme
 

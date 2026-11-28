@@ -52,7 +52,7 @@ export const SIGNORA_HTTP_CERTIFICATES_OPTIONS = new InjectionToken<HttpCertific
  * signed, e.g. with PAdES. **All cryptography happens on the server.**
  *
  * Request: `POST` `multipart/form-data` with a `pdf` file part and a `metadata`
- * JSON part (`certificateId`, `level`, `reason`, `location`, `signerName`, `options`).
+ * JSON part (`certificateId`, `level`, `reason`, `location`, `signerName`, `fieldName`, `options`).
  * Response: the signed PDF as `application/pdf`.
  *
  * The response is checked to be a PDF that contains a signature dictionary

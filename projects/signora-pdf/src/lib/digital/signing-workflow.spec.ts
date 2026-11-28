@@ -108,6 +108,33 @@ describe('SigningWorkflow', () => {
     expect(result.cryptographic).toBe(true);
   });
 
+  it('forwards export options to the visual stage and not to the provider', async () => {
+    const seen: DigitalSignRequest[] = [];
+    const workflow = await setup();
+    const session = TestBed.inject(SigningSession);
+    const exportPdf = vi.spyOn(session, 'exportPdf');
+    await workflow.sign({
+      provider: signer({}, seen),
+      fieldName: 'Client',
+      export: { createFields: true, requireAllFields: true },
+    });
+    expect(exportPdf).toHaveBeenCalledWith({ createFields: true, requireAllFields: true });
+    expect(seen[0].fieldName).toBe('Client');
+    expect('export' in seen[0]).toBe(false);
+  });
+
+  it('does not reach the provider when a required field is empty', async () => {
+    const seen: DigitalSignRequest[] = [];
+    const workflow = await setup();
+    TestBed.inject(SigningSession).setFields([
+      { id: 'f', pageIndex: 0, rect: { x: 0, y: 0, width: 0.1, height: 0.1 }, required: true },
+    ]);
+    await expect(
+      workflow.sign({ provider: signer({}, seen), export: { requireAllFields: true } }),
+    ).rejects.toThrow();
+    expect(seen.length).toBe(0);
+  });
+
   it('uses an explicit provider over the registered one', async () => {
     const registered = vi.fn();
     class Registered {

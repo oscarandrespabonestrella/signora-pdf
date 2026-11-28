@@ -48,6 +48,9 @@ Start with the complete guide: it fits in a single read and lists every input, o
 - [Viewer options](${RAW}/docs/viewer-options.md): view mode, signature modes, preloading, read-only, coordinates
 - [Coordinates](${RAW}/docs/coordinates.md): normalized model, PDF points, rotation
 - [Digital signing](${RAW}/docs/digital-signing.md): workflow and the HTTP contract for your backend
+- [Signature fields in the PDF](${RAW}/docs/signature-fields.md): read existing /Sig fields, create empty ones for a backend to sign into
+- [Signing an already signed PDF](${RAW}/docs/incremental-signing.md): incremental updates that keep earlier signatures valid
+- [Inspecting signatures](${RAW}/docs/validation.md): read the signatures a PDF already carries (signora-pdf/validation)
 - [Theming](${RAW}/docs/theming.md): design tokens, slots, labels
 - [Architecture](${RAW}/docs/architecture.md): ports and adapters
 

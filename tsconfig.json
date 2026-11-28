@@ -8,7 +8,8 @@
       "signora-pdf/pdfjs": ["./projects/signora-pdf/pdfjs/src/public-api.ts"],
       "signora-pdf/pdf-lib": ["./projects/signora-pdf/pdf-lib/src/public-api.ts"],
       "signora-pdf/ui": ["./projects/signora-pdf/ui/src/public-api.ts"],
-      "signora-pdf/http": ["./projects/signora-pdf/http/src/public-api.ts"]
+      "signora-pdf/http": ["./projects/signora-pdf/http/src/public-api.ts"],
+      "signora-pdf/validation": ["./projects/signora-pdf/validation/src/public-api.ts"]
     },
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,

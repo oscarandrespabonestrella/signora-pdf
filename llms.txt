@@ -8,6 +8,9 @@ Start with the complete guide: it fits in a single read and lists every input, o
 - [Viewer options](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/viewer-options.md): view mode, signature modes, preloading, read-only, coordinates
 - [Coordinates](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/coordinates.md): normalized model, PDF points, rotation
 - [Digital signing](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/digital-signing.md): workflow and the HTTP contract for your backend
+- [Signature fields in the PDF](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/signature-fields.md): read existing /Sig fields, create empty ones for a backend to sign into
+- [Signing an already signed PDF](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/incremental-signing.md): incremental updates that keep earlier signatures valid
+- [Inspecting signatures](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/validation.md): read the signatures a PDF already carries (signora-pdf/validation)
 - [Theming](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/theming.md): design tokens, slots, labels
 - [Architecture](https://github.com/oscarandrespabonestrella/signora-pdf/blob/main/docs/architecture.md): ports and adapters
 

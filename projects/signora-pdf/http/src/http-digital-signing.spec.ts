@@ -59,6 +59,7 @@ describe('HttpDigitalSignatureProvider', () => {
       level: 'B-T',
       reason: 'Approval',
       signerName: 'Ada',
+      fieldName: 'Client',
     });
 
     const req = http.expectOne('/api/sign');
@@ -74,6 +75,7 @@ describe('HttpDigitalSignatureProvider', () => {
       level: 'B-T',
       reason: 'Approval',
       signerName: 'Ada',
+      fieldName: 'Client',
     });
 
     req.flush(buffer(SIGNED));
